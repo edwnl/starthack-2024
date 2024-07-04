@@ -10,13 +10,11 @@ export default function ClientLayout({ children }) {
   return (
     <AuthProvider>
       <Layout
-        className="min-h-screen"
-        style={{ backgroundColor: "var(--light-primary-color)" }}
+        className="min-h-full"
       >
         <AppHeader />
-        <Content className="p-6">{children}</Content>
+        <Content className="p-6 flex flex-col justify-center">{children}</Content>
         <Footer
-          style={{ backgroundColor: "var(--light-primary-color)" }}
           className="text-center border-t"
         >
           Groupzy © 2024

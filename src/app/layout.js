@@ -2,17 +2,15 @@ import { Montserrat } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 import "antd/dist/reset.css";
-import AppHeader from "@/components/Header";
-import { Layout } from "antd";
+import { ConfigProvider } from "antd";
 import ClientLayout from "@/components/ClientLayout";
-
-const { Content, Footer } = Layout;
+import themeConfig from "@/theme/themeConfig";
 
 const montserrat = Montserrat({ subsets: ["latin"] });
 
 export const metadata = {
   title: "StartHack 2024",
-  description: "A simple todo app using Next.js and Firebase",
+  description: "A simple app using Next.js and Firebase",
 };
 
 export default function RootLayout({ children }) {
@@ -20,7 +18,9 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={montserrat.className}>
         <AuthProvider>
-          <ClientLayout>{children}</ClientLayout>
+          <ConfigProvider theme={themeConfig}>
+            <ClientLayout>{children}</ClientLayout>
+          </ConfigProvider>
         </AuthProvider>
       </body>
     </html>

@@ -78,7 +78,7 @@ export default function AppHeader() {
             <Link href="/profile">
               <Avatar
                 icon={<UserOutlined />}
-                className="bg-gray-900 hover:bg-gray-500 text-white"
+                className="bg-gray-900 text-white hover:bg-gray-400 transition-colors"
                 size="middle"
               />
             </Link>

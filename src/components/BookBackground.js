@@ -21,7 +21,7 @@ const BookBackground = () => {
   const books = [
     { top: '10%', left: '25%', rotate: '-15deg' },
     { top: '20%', left: '70%', rotate: '10deg' },
-    { top: '50%', left: '15%', rotate: '5deg' },
+    { top: '50%', left: '20%', rotate: '5deg' },
     { top: '70%', left: '75%', rotate: '-10deg' },
     { top: '85%', left: '40%', rotate: '20deg' },
   ];
