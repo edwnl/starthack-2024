@@ -1,3 +1,26 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --dark-primary-color: #1f1f1f;
+}
+
+/* Override Ant Design styles */
+.ant-layout-header {
+  background-color: white !important; 
+}
+
+.ant-menu.ant-menu-dark {
+  background-color: var(--dark-primary-color) !important;
+}
+
+.ant-menu-dark .ant-menu-item-selected {
+  background-color: var(
+    --dark-primary-color
+  ) !important;
+}
+
+.ant-menu-dark .ant-menu-item:hover {
+  background-color: var(--dark-primary-color) !important;
+}

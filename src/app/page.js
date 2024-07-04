@@ -20,11 +20,6 @@ export default function Home() {
         </Title>
         {user ? (
           <>
-            <Link href="/todo">
-              <Button type="primary" icon={<UnorderedListOutlined />}>
-                Go to Todo List
-              </Button>
-            </Link>
             <GoogleSignOut />
           </>
         ) : (
