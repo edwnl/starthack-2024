@@ -3,12 +3,19 @@
 @tailwind utilities;
 
 :root {
+  --light-primary-color: white;
   --dark-primary-color: #1f1f1f;
+
+  background-color: var(--light-primary-color);
 }
 
 /* Override Ant Design styles */
 .ant-layout-header {
-  background-color: white !important; 
+  background-color: var(--light-primary-color) !important; 
+}
+
+.ant-menu.ant-menu-light {
+  background-color: var(--light-primary-color) !important;
 }
 
 .ant-menu.ant-menu-dark {

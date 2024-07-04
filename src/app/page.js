@@ -1,11 +1,7 @@
 "use client";
 
 import { useAuth } from "@/contexts/AuthContext";
-import GoogleSignIn from "@/components/GoogleSignIn";
-import GoogleSignOut from "@/components/GoogleSignOut";
-import Link from "next/link";
-import { Typography, Button } from "antd";
-import { UnorderedListOutlined } from "@ant-design/icons";
+import { Typography } from "antd";
 
 const { Title } = Typography;
 
@@ -15,16 +11,14 @@ export default function Home() {
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="text-center">
-        <Title level={2} className="mb-6">
-          Welcome {user ? user.displayName : " to Groupzy"}!
+        <Title
+          style={{ fontSize: "5rem", fontWeight: "200" }}
+          level={1}
+          className="mb-6"
+        >
+          Ace Your Studies with{" "}
+          <span style={{ fontWeight: "500" }}>Groupzy</span>
         </Title>
-        {user ? (
-          <>
-            <GoogleSignOut />
-          </>
-        ) : (
-          <GoogleSignIn />
-        )}
       </div>
     </div>
   );

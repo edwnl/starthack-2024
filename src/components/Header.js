@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Layout, Menu, Button, Avatar } from "antd";
+import { Layout, Menu, Button, Avatar, Divider } from "antd";
 import {
   UserOutlined,
   TeamOutlined,
@@ -46,16 +46,15 @@ export default function AppHeader() {
   ];
 
   return (
-    <Header className="px-4">
-      <div className="flex justify-between items-center w-full h-full">
-        <Link href="/" className="flex-shrink-0">
+    <Header className="border-b h-fit">
+      <div className="grid grid-cols-[1fr_auto_1fr] items-center h-full">
+        <Link href="/" className="justify-self-start">
           <GroupzyLogo />
         </Link>
-        <div className="hidden sm:flex flex-grow justify-center">
+        <div className="hidden md:inline col-start-2">
           <Menu
-            theme="light"
-            mode={"horizontal"}
-            className="border-0"
+            className="border-none"
+            mode="horizontal"
             disabledOverflow={true}
           >
             {menuItems.map((item) => (
@@ -65,18 +64,19 @@ export default function AppHeader() {
             ))}
           </Menu>
         </div>
-        <div className="flex items-center">
-          <div className="sm:hidden mr-4">
+        <div className="justify-self-end">
+          <div className="md:hidden mr-4">
             <Button
-              icon={<MenuOutlined />}
+              style={{ backgroundColor: "transparent" }}
+              icon={<MenuOutlined style={{ backgroundColor: "transparent" }} />}
               onClick={() => setMobileMenuVisible(!mobileMenuVisible)}
             />
           </div>
           {user ? (
-            <Link href="/profile" className="flex-shrink-0">
+            <Link href="/profile">
               <Avatar
                 icon={<UserOutlined />}
-                className="bg-gray-900 text-white"
+                className="bg-gray-900 hover:bg-gray-500 text-white"
                 size="middle"
               />
             </Link>
@@ -86,12 +86,19 @@ export default function AppHeader() {
         </div>
       </div>
       {mobileMenuVisible && (
-        <div className="sm:hidden mt-2">
-          <Menu theme="light" mode="vertical">
-            {menuItems.map((item) => (
-              <Menu.Item key={item.key} icon={item.icon}>
-                <Link href={item.href}>{item.label}</Link>
-              </Menu.Item>
+        <div className="md:hidden mt-2">
+          <Menu mode="vertical" className="border">
+            {menuItems.map((item, i) => (
+              <>
+                <Menu.Item key={item.key} icon={item.icon}>
+                  <Link href={item.href}>{item.label}</Link>
+                </Menu.Item>
+                {i !== menuItems.length - 1 ? (
+                  <Divider type="horizontal" className="m-0" />
+                ) : (
+                  ""
+                )}
+              </>
             ))}
           </Menu>
         </div>
