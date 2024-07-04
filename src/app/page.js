@@ -1,12 +1,23 @@
-import {Button} from "antd";
+"use client";
+
+import { useAuth } from "@/contexts/AuthContext";
+import GoogleSignIn from "@/components/GoogleSignIn";
+import GoogleSignOut from "@/components/GoogleSignOut";
 
 export default function Home() {
-  return (
-      <div className="text-center flex-row">
-          <div className="text-5xl ">
-              Hello there.
-          </div>
-          <Button>This is a button from antd!</Button>
-      </div>
-  );
+    const { user } = useAuth();
+
+    return (
+        <div>
+            <h1>Welcome to Groupzy</h1>
+            {user ? (
+                <>
+                    <p>Hello, {user.displayName}</p>
+                    <GoogleSignOut />
+                </>
+            ) : (
+                <GoogleSignIn />
+            )}
+        </div>
+    );
 }
