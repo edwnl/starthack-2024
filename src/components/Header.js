@@ -46,16 +46,18 @@ export default function AppHeader() {
   ];
 
   return (
-    <Header className="border-b h-fit">
+    <Header className="border-b h-fit md:px-8">
       <div className="grid grid-cols-[1fr_auto_1fr] items-center h-full">
         <Link href="/" className="justify-self-start">
           <GroupzyLogo />
         </Link>
-        <div className="hidden md:inline col-start-2">
+        <div className="md:hidden"></div>
+        <div className="hidden md:block col-start-2">
           <Menu
             className="border-none"
             mode="horizontal"
             disabledOverflow={true}
+            selectable={false}
           >
             {menuItems.map((item) => (
               <Menu.Item key={item.key} icon={item.icon}>
@@ -64,7 +66,7 @@ export default function AppHeader() {
             ))}
           </Menu>
         </div>
-        <div className="justify-self-end">
+        <div className="justify-self-end flex">
           <div className="md:hidden mr-4">
             <Button
               style={{ backgroundColor: "transparent" }}
@@ -87,7 +89,7 @@ export default function AppHeader() {
       </div>
       {mobileMenuVisible && (
         <div className="md:hidden mt-2">
-          <Menu mode="vertical" className="border">
+          <Menu mode="vertical" style={{ border: "none" }}>
             {menuItems.map((item, i) => (
               <>
                 <Menu.Item key={item.key} icon={item.icon}>
