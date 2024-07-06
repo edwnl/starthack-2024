@@ -1,11 +1,9 @@
 "use client";
 
+import BookBackground from "@/components/BookBackground";
+import LargeSearchBar from "@/components/LargeSearchBar";
 import { useAuth } from "@/contexts/AuthContext";
-import GoogleSignIn from "@/components/GoogleSignIn";
-import GoogleSignOut from "@/components/GoogleSignOut";
-import Link from "next/link";
-import { Typography, Button } from "antd";
-import { UnorderedListOutlined } from "@ant-design/icons";
+import { Typography } from "antd";
 
 const { Title } = Typography;
 
@@ -13,23 +11,21 @@ export default function Home() {
   const { user } = useAuth();
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="text-center">
-        <Title level={2} className="mb-6">
-          Welcome {user ? user.displayName : " to Groupzy"}!
+    <div className="flex items-center justify-center p-4">
+      <div className="text-center lg:w-1/3 md:w-1/2 flex flex-col justify-center items-center">
+        <BookBackground />
+        <Title
+          style={{ fontSize: "5rem", fontWeight: "200", marginBottom: 0 }}
+          level={1}
+        >
+          Ace Your Studies with{" "}
+          <span style={{ fontWeight: "500"}}>Groupzy</span>
         </Title>
-        {user ? (
-          <>
-            <Link href="/todo">
-              <Button type="primary" icon={<UnorderedListOutlined />}>
-                Go to Todo List
-              </Button>
-            </Link>
-            <GoogleSignOut />
-          </>
-        ) : (
-          <GoogleSignIn />
-        )}
+        <Title style={{ fontWeight: "200", marginTop: "0.5rem", marginBottom: "2rem" }} level={2}>
+          Track, collaborate, and compete with study groups
+          <span style={{ fontWeight: "500" }}> effortlessly</span>.
+        </Title>
+        <LargeSearchBar />
       </div>
     </div>
   );
