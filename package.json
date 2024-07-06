@@ -10,7 +10,8 @@
   },
   "dependencies": {
     "@ant-design/icons": "^5.3.7",
-    "antd": "^5.18.3",
+    "antd": "^5.19.1",
+    "dayjs": "^1.11.11",
     "firebase": "^10.12.3",
     "firebase-admin": "^12.2.0",
     "next": "14.2.4",
