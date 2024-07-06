@@ -1,17 +1,59 @@
 'use client'
 
-import React from 'react'
-import { Form, Input, DatePicker, InputNumber, Select, Switch, Button, Space } from 'antd'
-import { PlusOutlined, SearchOutlined } from '@ant-design/icons';
+import React, { useState, useEffect } from 'react'
+import { Form, Input, DatePicker, InputNumber, Select, Checkbox, Button, Space, message } from 'antd'
+import { SearchOutlined } from '@ant-design/icons'
+import dayjs from 'dayjs'
+import { createGroup } from './action'
 
 const { RangePicker } = DatePicker
 
 const CreateGroup = () => {
   const [form] = Form.useForm()
+  const [startNow, setStartNow] = useState(false)
+  const [loading, setLoading] = useState(false)
 
-  const onFinish = (values) => {
-    console.log('Received values of form: ', values)
-    // Here you would call your createGroup action
+  useEffect(() => {
+    if (startNow) {
+      const now = dayjs()
+      form.setFieldsValue({
+        timeRange: [now, null]
+      })
+    }
+  }, [startNow, form])
+
+  const onFinish = async (values) => {
+    setLoading(true)
+    try {
+      const groupData = {
+        ...values,
+        hostUser: 'user1', // Replace with actual user ID from auth context
+        timeRange: values.timeRange.map(time => time.toISOString())
+      }
+      
+      const result = await createGroup(groupData)
+      
+      if (result.success) {
+        message.success('Group created successfully!')
+        form.resetFields()
+      } else {
+        message.error(`Failed to create group: ${result.error}`)
+      }
+    } catch (error) {
+      message.error('An error occurred while creating the group')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const onStartNowChange = (e) => {
+    const checked = e.target.checked
+    setStartNow(checked)
+    if (!checked) {
+      form.setFieldsValue({
+        timeRange: null
+      })
+    }
   }
 
   return (
@@ -38,7 +80,10 @@ const CreateGroup = () => {
               noStyle
               rules={[{ required: true, message: 'Building is required' }]}
             >
-              <Input placeholder="Building" suffix={<SearchOutlined style={{ color: 'rgba(0,0,0,.45)' }} />}  />
+              <Input 
+                placeholder="Building" 
+                suffix={<SearchOutlined style={{ color: 'rgba(0,0,0,.45)' }} />} 
+              />
             </Form.Item>
             <Form.Item
               name={['location', 'locationInBuilding']}
@@ -51,15 +96,23 @@ const CreateGroup = () => {
         </Form.Item>
 
         <Form.Item label="When Are You Studying?">
-          <Form.Item name="startNow" valuePropName="checked" noStyle>
-            <Switch checkedChildren="Start Now" unCheckedChildren="Start Later" />
-          </Form.Item>
+          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+            <span style={{ marginRight: '8px' }}>Start Now</span>
+            <Form.Item name="startNow" valuePropName="checked" noStyle>
+              <Checkbox onChange={onStartNowChange} />
+            </Form.Item>
+          </div>
           <Form.Item 
             name="timeRange"
             noStyle
             rules={[{ type: 'array', required: true, message: 'Please select time!' }]}
           >
-            <RangePicker showTime format="YYYY-MM-DD HH:mm:ss" style={{ marginTop: '10px', width: '100%' }} />
+            <RangePicker 
+              showTime 
+              format="YYYY-MM-DD HH:mm:ss" 
+              style={{ width: '100%' }}
+              disabled={[startNow, false]}
+            />
           </Form.Item>
         </Form.Item>
 
@@ -82,7 +135,7 @@ const CreateGroup = () => {
         </Form.Item>
 
         <Form.Item>
-          <Button type="primary" htmlType="submit" block size="large">
+          <Button type="primary" htmlType="submit" block size="large" loading={loading}>
             Create
           </Button>
         </Form.Item>
