@@ -5,10 +5,12 @@ import { Form, Input, DatePicker, TimePicker, InputNumber, Select, Checkbox, But
 import { SearchOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
 import { createGroup } from './action'
+import { useAuth } from '@/contexts/AuthContext'
 
 const { Title } = Typography;
 
 const CreateGroup = () => {
+  const { user } = useAuth() // Get the current user from auth context
   const [form] = Form.useForm()
   const [startNow, setStartNow] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -29,15 +31,15 @@ const CreateGroup = () => {
       const { date, timeRange, ...otherValues } = values
       let startDateTime = date.hour(timeRange[0].hour()).minute(timeRange[0].minute())
       let endDateTime = timeRange[1] ? date.hour(timeRange[1].hour()).minute(timeRange[1].minute()) : null
-
+  
       // Adjust end time if it's earlier than start time (crosses midnight)
       if (endDateTime && endDateTime.isBefore(startDateTime)) {
         endDateTime = endDateTime.add(1, 'day')
       }
-
+  
       const groupData = {
         ...otherValues,
-        hostUser: 'user1', // Replace with actual user ID from auth context
+        hostUser: user?.uid, // Use the actual user ID from auth context
         startTime: startDateTime.toISOString(),
         endTime: endDateTime ? endDateTime.toISOString() : null
       }
