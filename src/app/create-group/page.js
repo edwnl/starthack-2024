@@ -19,7 +19,7 @@ const CreateGroup = () => {
         ...values,
         startTime: values.timeRange[0].toISOString(),
         endTime: values.timeRange[1].toISOString(),
-        creatorId: 'user1', // Replace with actual user ID from auth context
+        hostUser: 'user1', // Replace with actual user ID from auth context
       }
       
       const result = await createGroup(groupData)
@@ -55,22 +55,17 @@ const CreateGroup = () => {
         </Form.Item>
 
         <Form.Item
-          name="subject"
-          label="Main Subject"
-          rules={[{ required: true, message: 'Please select the main subject!' }]}
+          name="building"
+          label="Building"
+          rules={[{ required: true, message: 'Please input the building!' }]}
         >
-          <Select>
-            <Option value="Math">Math</Option>
-            <Option value="Science">Science</Option>
-            <Option value="Literature">Literature</Option>
-            <Option value="History">History</Option>
-          </Select>
+          <Input />
         </Form.Item>
 
         <Form.Item
-          name="location"
-          label="Location"
-          rules={[{ required: true, message: 'Please input the location!' }]}
+          name="locationInBuilding"
+          label="Location in Building"
+          rules={[{ required: true, message: 'Please input the location in building!' }]}
         >
           <Input />
         </Form.Item>
@@ -104,16 +99,16 @@ const CreateGroup = () => {
           </Select>
         </Form.Item>
 
-        <Form.Item name="repeat" label="Repeat" valuePropName="checked">
+        <Form.Item name={['repeat', 'isRepeated']} label="Repeat" valuePropName="checked">
           <Switch />
         </Form.Item>
 
         <Form.Item
           noStyle
-          shouldUpdate={(prevValues, currentValues) => prevValues.repeat !== currentValues.repeat}
+          shouldUpdate={(prevValues, currentValues) => prevValues.repeat?.isRepeated !== currentValues.repeat?.isRepeated}
         >
           {({ getFieldValue }) =>
-            getFieldValue('repeat') ? (
+            getFieldValue(['repeat', 'isRepeated']) ? (
               <Form.Item
                 name={['repeat', 'frequency']}
                 label="Repeat Frequency"
