@@ -6,9 +6,9 @@ export async function createGroup(groupData) {
   const db = admin.firestore()
   
   try {
-    // Convert the timeRange to Firestore Timestamps
-    const startTime = admin.firestore.Timestamp.fromDate(new Date(groupData.timeRange[0]))
-    const endTime = admin.firestore.Timestamp.fromDate(new Date(groupData.timeRange[1]))
+    // Convert the start and end times to Firestore Timestamps
+    const startTime = admin.firestore.Timestamp.fromDate(new Date(groupData.startTime))
+    const endTime = admin.firestore.Timestamp.fromDate(new Date(groupData.endTime))
 
     // Create a new group document
     const groupRef = await db.collection('groups').add({
