@@ -6,6 +6,7 @@ import {
   TeamOutlined,
   BarChartOutlined,
 } from "@ant-design/icons";
+import ProtectedPage from "@/components/ProtectedPage";
 
 const { Title } = Typography;
 
@@ -42,42 +43,44 @@ const StatsPage = () => {
   ];
 
   return (
-    <div className="p-4 md:p-8 bg-white min-h-screen">
-      <Title level={2} className="mb-6">
-        Stats
-      </Title>
-      {statsData.map((stats, index) => (
-        <Card key={index} className="mb-8 shadow-md">
-          <Title level={3}>{stats.period}</Title>
-          <p className="text-gray-500 mb-4">
-            Tracking from {stats.trackingFrom}
-          </p>
-          <Row gutter={[16, 16]}>
-            <Col xs={24} md={8}>
-              <Statistic
-                title="Total Study Time"
-                value={stats.totalTime}
-                prefix={<ClockCircleOutlined />}
-              />
-            </Col>
-            <Col xs={24} md={8}>
-              <Statistic
-                title="Average Study Time"
-                value={stats.avgTime}
-                prefix={<BarChartOutlined />}
-              />
-            </Col>
-            <Col xs={24} md={8}>
-              <Statistic
-                title="Total Groups Attended"
-                value={stats.groupsAttended}
-                prefix={<TeamOutlined />}
-              />
-            </Col>
-          </Row>
-        </Card>
-      ))}
-    </div>
+    <ProtectedPage>
+      <div className="p-4 md:p-8 bg-white min-h-screen">
+        <Title level={2} className="mb-6">
+          Stats
+        </Title>
+        {statsData.map((stats, index) => (
+          <Card key={index} className="mb-8 shadow-md">
+            <Title level={3}>{stats.period}</Title>
+            <p className="text-gray-500 mb-4">
+              Tracking from {stats.trackingFrom}
+            </p>
+            <Row gutter={[16, 16]}>
+              <Col xs={24} md={8}>
+                <Statistic
+                  title="Total Study Time"
+                  value={stats.totalTime}
+                  prefix={<ClockCircleOutlined />}
+                />
+              </Col>
+              <Col xs={24} md={8}>
+                <Statistic
+                  title="Average Study Time"
+                  value={stats.avgTime}
+                  prefix={<BarChartOutlined />}
+                />
+              </Col>
+              <Col xs={24} md={8}>
+                <Statistic
+                  title="Total Groups Attended"
+                  value={stats.groupsAttended}
+                  prefix={<TeamOutlined />}
+                />
+              </Col>
+            </Row>
+          </Card>
+        ))}
+      </div>
+    </ProtectedPage>
   );
 };
 

@@ -9,16 +9,10 @@ const { Content, Footer } = Layout;
 export default function ClientLayout({ children }) {
   return (
     <AuthProvider>
-      <Layout
-        className="min-h-full"
-      >
+      <Layout className="min-h-screen flex flex-col">
         <AppHeader />
-        <Content className="p-6 flex flex-col justify-center">{children}</Content>
-        <Footer
-          className="text-center border-t"
-        >
-          Groupzy © 2024
-        </Footer>
+        <Content className="flex-grow flex flex-col">{children}</Content>
+        <Footer className="text-center border-t">Groupzy © 2024</Footer>
       </Layout>
     </AuthProvider>
   );

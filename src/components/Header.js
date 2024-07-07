@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Layout, Menu, Button, Avatar, Divider } from "antd";
+import { Layout, Menu, Button, Divider } from "antd";
 import {
   UserOutlined,
   TeamOutlined,
@@ -11,6 +11,7 @@ import {
   LogoutOutlined,
   ProfileOutlined,
   MenuOutlined,
+  NumberOutlined,
 } from "@ant-design/icons";
 import { useAuth } from "@/contexts/AuthContext";
 import SignIn from "./GoogleSignIn";
@@ -43,18 +44,23 @@ export default function AppHeader() {
       label: "Create Group",
       href: "/create-group",
     },
+    {
+      key: "stats",
+      icon: <NumberOutlined />,
+      label: "Stats",
+      href: "/stats",
+    },
   ];
 
   return (
-    <Header className="border-b h-fit md:px-8">
-      <div className="grid grid-cols-[1fr_auto_1fr] items-center h-full">
-        <Link href="/" className="justify-self-start">
+    <Header className="border-b p-0 h-auto">
+      <div className="flex justify-between items-center h-16 px-4 md:px-8">
+        <Link href="/" className="flex items-center">
           <GroupzyLogo />
         </Link>
-        <div className="md:hidden"></div>
-        <div className="hidden md:block col-start-2">
+        <div className="hidden md:block">
           <Menu
-            className="border-none"
+            className="border-none bg-transparent"
             mode="horizontal"
             disabledOverflow={true}
             selectable={false}
@@ -66,41 +72,24 @@ export default function AppHeader() {
             ))}
           </Menu>
         </div>
-        <div className="justify-self-end flex">
-          <div className="md:hidden mr-4">
+        <div className="flex items-center">
+          {user ? <SignOut /> : <SignIn />}
+          <div className="md:hidden m-4">
             <Button
-              style={{ backgroundColor: "transparent" }}
-              icon={<MenuOutlined style={{ backgroundColor: "transparent" }} />}
+              type="text"
+              icon={<MenuOutlined />}
               onClick={() => setMobileMenuVisible(!mobileMenuVisible)}
             />
           </div>
-          {user ? (
-            <Link href="/profile">
-              <Avatar
-                icon={<UserOutlined />}
-                className="bg-gray-900 text-white hover:bg-gray-400 transition-colors"
-                size="middle"
-              />
-            </Link>
-          ) : (
-            <SignIn />
-          )}
         </div>
       </div>
       {mobileMenuVisible && (
-        <div className="md:hidden mt-2">
-          <Menu mode="vertical" style={{ border: "none" }}>
+        <div className="md:hidden">
+          <Menu mode="vertical" className="border-none">
             {menuItems.map((item, i) => (
-              <>
-                <Menu.Item key={item.key} icon={item.icon}>
-                  <Link href={item.href}>{item.label}</Link>
-                </Menu.Item>
-                {i !== menuItems.length - 1 ? (
-                  <Divider type="horizontal" className="m-0" />
-                ) : (
-                  ""
-                )}
-              </>
+              <Menu.Item key={item.key} icon={item.icon}>
+                <Link href={item.href}>{item.label}</Link>
+              </Menu.Item>
             ))}
           </Menu>
         </div>

@@ -5,6 +5,7 @@ import AddFriendModal from "@/components/AddFriendModal";
 import FriendsList from "@/components/FriendsList";
 import FriendRequestsList from "@/components/FriendRequestsList";
 import { getAllFriends, getAllFriendRequests } from "@/app/friends/actions";
+import ProtectedPage from "@/components/ProtectedPage";
 
 const { Title } = Typography;
 const { Search } = Input;
@@ -123,53 +124,58 @@ export default function Friends() {
       : `All Requests - ${friendRequests.length}`;
 
   return (
-    <div className="flex w-full">
-      <div className="flex flex-col p-4 w-2/3">
-        <div className="mb-5">
-          <Title
-            level={2}
-            style={{
-              fontSize: "48px",
-              fontWeight: "500",
-              marginBottom: "0.5rem",
-            }}
-          >
-            {getTitle()}
-          </Title>
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-start w-full sm:w-1/2 mb-4 gap-3 sm:gap-5">
-            <span className="text-2xl font-medium" style={{ fontSize: "1rem" }}>
-              {getSubtitle()}
-            </span>
-            <Button
-              type="primary"
-              onClick={showModal}
+    <ProtectedPage>
+      <div className="flex w-full">
+        <div className="flex flex-col p-4 w-2/3">
+          <div className="mb-5">
+            <Title
+              level={2}
               style={{
-                backgroundColor: "#1890FF",
-                borderColor: "#1890FF",
-                boxShadow: "none",
-                textDecoration: "none",
+                fontSize: "48px",
+                fontWeight: "500",
+                marginBottom: "0.5rem",
               }}
             >
-              Add Friend
-            </Button>
+              {getTitle()}
+            </Title>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-start w-full sm:w-1/2 mb-4 gap-3 sm:gap-5">
+              <span
+                className="text-2xl font-medium"
+                style={{ fontSize: "1rem" }}
+              >
+                {getSubtitle()}
+              </span>
+              <Button
+                type="primary"
+                onClick={showModal}
+                style={{
+                  backgroundColor: "#1890FF",
+                  borderColor: "#1890FF",
+                  boxShadow: "none",
+                  textDecoration: "none",
+                }}
+              >
+                Add Friend
+              </Button>
+            </div>
+            <AddFriendModal
+              isOpen={isModalOpen}
+              onOk={handleOk}
+              onCancel={handleCancel}
+            />
           </div>
-          <AddFriendModal
-            isOpen={isModalOpen}
-            onOk={handleOk}
-            onCancel={handleCancel}
-          />
-        </div>
-        <div className="w-full mb-4">
-          <Search
-            placeholder="Search friends"
-            onSearch={onSearch}
-            className="w-full"
-          />
-        </div>
-        <div className="h-[500px] overflow-y-auto">
-          <Tabs defaultActiveKey="1" items={items} onChange={onChange} />
+          <div className="w-full mb-4">
+            <Search
+              placeholder="Search friends"
+              onSearch={onSearch}
+              className="w-full"
+            />
+          </div>
+          <div className="h-[500px] overflow-y-auto">
+            <Tabs defaultActiveKey="1" items={items} onChange={onChange} />
+          </div>
         </div>
       </div>
-    </div>
+    </ProtectedPage>
   );
 }
