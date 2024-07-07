@@ -15,7 +15,7 @@ const { TabPane } = Tabs;
 
 const Leaderboard = () => {
   return (
-    <div>
+    <div className="flex-grow flex flex-col justify-center p-4">
       <Title
         level={2}
         style={{
