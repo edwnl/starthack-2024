@@ -247,7 +247,7 @@ const Results = () => {
       <Text className="mb-8">
         16 study groups found nearby Learning Teaching's Building, Monash University
       </Text>
-      <Table
+      <Table className="mt-2"
         columns={columns}
         dataSource={data}
         pagination={{
