@@ -1,0 +1,37 @@
+/* Autocomplete container */
+.pac-container {
+    background-color: #fff;
+    border: 1px solid #000;
+    border-radius: 4px;
+    box-shadow: none;
+    font-family: Arial, sans-serif;
+    padding: 5px;
+}
+
+/* Autocomplete item */
+.pac-item {
+    padding: 8px;
+    cursor: pointer;
+    color: #000;
+    border-top: 1px solid #e6e6e6;
+}
+
+.pac-item:first-child {
+    border-top: none;
+}
+
+/* Hover state */
+.pac-item:hover {
+    background-color: #f0f0f0;
+}
+
+/* Matched text */
+.pac-item-query {
+    font-weight: bold;
+    color: #000;
+}
+
+/* Remove Google logo */
+.pac-logo:after {
+    display: none;
+}

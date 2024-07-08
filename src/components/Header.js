@@ -12,6 +12,7 @@ import {
   ProfileOutlined,
   MenuOutlined,
   NumberOutlined,
+  ClockCircleOutlined,
 } from "@ant-design/icons";
 import { useAuth } from "@/contexts/AuthContext";
 import SignIn from "./GoogleSignIn";
@@ -31,50 +32,72 @@ export default function AppHeader() {
       icon: <TeamOutlined />,
       label: "Friends",
       href: "/friends",
+      bold: false,
     },
     {
       key: "leaderboard",
       icon: <TrophyOutlined />,
       label: "Leaderboard",
       href: "/leaderboard",
+      bold: false,
     },
     {
       key: "create",
       icon: <PlusCircleOutlined />,
       label: "Create Group",
       href: "/create-group",
+      bold: false,
     },
     {
       key: "stats",
       icon: <NumberOutlined />,
       label: "Stats",
       href: "/stats",
+      bold: false,
     },
   ];
+
+  if (true) {
+    menuItems.push({
+      key: "active-session",
+      icon: <ClockCircleOutlined />,
+      label: "Active Session",
+      href: "/active-session",
+      bold: true, // Making the Active Session menu item bold by default
+    });
+  }
+
+  const renderMenuItem = (item) => (
+    <Menu.Item key={item.key} icon={item.icon}>
+      <Link href={item.href} onClick={() => setMobileMenuVisible(false)}>
+        <span className={item.bold ? "font-bold" : ""}>{item.label}</span>
+      </Link>
+    </Menu.Item>
+  );
 
   return (
     <Header className="border-b p-0 h-auto">
       <div className="flex justify-between items-center h-16 px-4 md:px-8">
-        <Link href="/" className="flex items-center">
+        <Link
+          href="/"
+          className="flex items-center"
+          onClick={() => setMobileMenuVisible(false)}
+        >
           <GroupzyLogo />
         </Link>
-        <div className="hidden md:block">
+        <div className="hidden lg:block">
           <Menu
             className="border-none bg-transparent"
             mode="horizontal"
             disabledOverflow={true}
             selectable={false}
           >
-            {menuItems.map((item) => (
-              <Menu.Item key={item.key} icon={item.icon}>
-                <Link href={item.href}>{item.label}</Link>
-              </Menu.Item>
-            ))}
+            {menuItems.map(renderMenuItem)}
           </Menu>
         </div>
         <div className="flex items-center">
           {user ? <SignOut /> : <SignIn />}
-          <div className="md:hidden m-4">
+          <div className="lg:hidden m-4">
             <Button
               type="text"
               icon={<MenuOutlined />}
@@ -84,13 +107,9 @@ export default function AppHeader() {
         </div>
       </div>
       {mobileMenuVisible && (
-        <div className="md:hidden">
+        <div className="lg:hidden">
           <Menu mode="vertical" className="border-none">
-            {menuItems.map((item, i) => (
-              <Menu.Item key={item.key} icon={item.icon}>
-                <Link href={item.href}>{item.label}</Link>
-              </Menu.Item>
-            ))}
+            {menuItems.map(renderMenuItem)}
           </Menu>
         </div>
       )}

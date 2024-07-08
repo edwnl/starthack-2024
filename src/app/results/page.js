@@ -1,12 +1,64 @@
 "use client";
 
-import React, { useState } from "react";
-import { Typography, Table, Tag } from "antd";
+import React, { useEffect, useState } from "react";
+import { Table, Modal, Button, Tag } from "antd";
+import { UserOutlined } from "@ant-design/icons";
+import { useRouter, useSearchParams } from "next/navigation";
+import Title from "antd/es/typography/Title";
+import Link from "next/link";
 
-const { Title, Text } = Typography;
+const sampleData = [
+  {
+    id: 1,
+    studyGroup: "Algorithms & Data Structures",
+    groupOwner: "Ashley Zhang",
+    location: "Baillieu Library",
+    startTime: "10:00am",
+    participants: 12,
+    subjectAreas: ["computer science"],
+  },
+  {
+    id: 2,
+    studyGroup: "Study n' Chill",
+    groupOwner: "Professor's Walk Café",
+    location: "Baillieu Library",
+    startTime: "2:00pm",
+    participants: 24,
+    subjectAreas: ["social"],
+  },
+  // Add more sample data here...
+];
 
-const Results = () => {
-  const [currentPage, setCurrentPage] = useState(1);
+const ResultsPage = () => {
+  const searchParams = useSearchParams();
+  const [location, setLocation] = useState("");
+  const [lat, setLat] = useState(null);
+  const [lng, setLng] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedGroup, setSelectedGroup] = useState(null);
+
+  useEffect(() => {
+    const latParam = searchParams.get("lat");
+    const lngParam = searchParams.get("lng");
+    const locationParam = searchParams.get("location");
+
+    if (latParam && lngParam && locationParam) {
+      setLat(parseFloat(latParam));
+      setLng(parseFloat(lngParam));
+      setLocation(decodeURIComponent(locationParam));
+    }
+  }, [searchParams]);
+
+  const handleRowClick = (record) => {
+    setSelectedGroup(record);
+    setModalVisible(true);
+  };
+
+  const handleJoinGroup = () => {
+    // Implement join group functionality here
+    console.log(`Joined group: ${selectedGroup.studyGroup}`);
+    setModalVisible(false);
+  };
 
   const columns = [
     {
@@ -23,13 +75,6 @@ const Results = () => {
       title: "Location",
       dataIndex: "location",
       key: "location",
-      render: (location) => (
-        <div>
-          LTB
-          <br />
-          {location}
-        </div>
-      ),
     },
     {
       title: "Start Time",
@@ -38,228 +83,106 @@ const Results = () => {
     },
     {
       title: "Number of Participants",
-      dataIndex: "numParticipants",
-      key: "numParticipants",
+      dataIndex: "participants",
+      key: "participants",
     },
     {
       title: "Subject Areas",
-      dataIndex: "subjectAreas",
       key: "subjectAreas",
-      render: (subjectAreas) => (
-        <div>
-          {subjectAreas.map((subject, index) => (
-            <Tag key={index} color={getTagColor(subject)}>
-              {subject}
-            </Tag>
-          ))}
-        </div>
+      dataIndex: "subjectAreas",
+      render: (_, { subjectAreas }) => (
+        <>
+          {subjectAreas.map((tag) => {
+            let color = tag.length > 5 ? "geekblue" : "green";
+            if (tag === "social") {
+              color = "blue";
+            }
+            return (
+              <Tag color={color} key={tag}>
+                {tag.toUpperCase()}
+              </Tag>
+            );
+          })}
+        </>
       ),
     },
   ];
 
-  const data = [
-    {
-      key: "1",
-      studyGroup: "Algorithms & Data Structures",
-      groupOwner: "Ashley Zhang",
-      location: "Ground floor",
-      startTime: "10:00am",
-      numParticipants: 12,
-      subjectAreas: ["computer science"],
-    },
-    {
-      key: "2",
-      studyGroup: "Study n' Chill",
-      groupOwner: "Professor's Walk Café",
-      location: "Level 1",
-      startTime: "2:00pm",
-      numParticipants: 24,
-      subjectAreas: ["social"],
-    },
-    {
-      key: "3",
-      studyGroup: "Quantum Computing",
-      groupOwner: "Dr. Emily Chen",
-      location: "Level 2",
-      startTime: "4:30pm",
-      numParticipants: 8,
-      subjectAreas: ["physics", "computer science"],
-    },
-    {
-      key: "4",
-      studyGroup: "Shakespeare's Sonnets",
-      groupOwner: "Prof. John Doe",
-      location: "Ground floor",
-      startTime: "7:00pm",
-      numParticipants: 16,
-      subjectAreas: ["literature"],
-    },
-    {
-      key: "5",
-      studyGroup: "Organic Chemistry",
-      groupOwner: "Jane Smith",
-      location: "Level 1",
-      startTime: "9:00am",
-      numParticipants: 18,
-      subjectAreas: ["chemistry"],
-    },
-    {
-      key: "6",
-      studyGroup: "Intro to Machine Learning",
-      groupOwner: "Professor AI",
-      location: "Level 2",
-      startTime: "11:00am",
-      numParticipants: 20,
-      subjectAreas: ["computer science"],
-    },
-    {
-      key: "7",
-      studyGroup: "Modern Art History",
-      groupOwner: "Sarah Lee",
-      location: "Ground floor",
-      startTime: "1:00pm",
-      numParticipants: 14,
-      subjectAreas: ["arts"],
-    },
-    {
-      key: "8",
-      studyGroup: "Calculus 101",
-      groupOwner: "Mr. Mathematic",
-      location: "Level 1",
-      startTime: "3:30pm",
-      numParticipants: 22,
-      subjectAreas: ["mathematics"],
-    },
-    {
-      key: "9",
-      studyGroup: "Intro to Psychology",
-      groupOwner: "Dr. Mind",
-      location: "Level 2",
-      startTime: "6:00pm",
-      numParticipants: 19,
-      subjectAreas: ["social science"],
-    },
-    {
-      key: "10",
-      studyGroup: "Environmental Science",
-      groupOwner: "Ms. Nature",
-      location: "Ground floor",
-      startTime: "8:00pm",
-      numParticipants: 15,
-      subjectAreas: ["science"],
-    },
-    {
-      key: "11",
-      studyGroup: "Programming Fundamentals",
-      groupOwner: "CodeMaster",
-      location: "Level 1",
-      startTime: "10:00am",
-      numParticipants: 18,
-      subjectAreas: ["computer science"],
-    },
-    {
-      key: "12",
-      studyGroup: "Microeconomics",
-      groupOwner: "Prof. Economica",
-      location: "Level 2",
-      startTime: "2:00pm",
-      numParticipants: 21,
-      subjectAreas: ["economics"],
-    },
-    {
-      key: "13",
-      studyGroup: "Mythology and Folklore",
-      groupOwner: "Dr. Legends",
-      location: "Ground floor",
-      startTime: "4:30pm",
-      numParticipants: 16,
-      subjectAreas: ["humanities"],
-    },
-    {
-      key: "14",
-      studyGroup: "Biomedical Engineering",
-      groupOwner: "Ms. Technica",
-      location: "Level 1",
-      startTime: "7:00pm",
-      numParticipants: 14,
-      subjectAreas: ["engineering", "science"],
-    },
-    {
-      key: "15",
-      studyGroup: "Creative Writing",
-      groupOwner: "Author Extraordinaire",
-      location: "Level 2",
-      startTime: "9:00am",
-      numParticipants: 17,
-      subjectAreas: ["arts", "humanities"],
-    },
-    {
-      key: "16",
-      studyGroup: "Discrete Mathematics",
-      groupOwner: "Prof. Logica",
-      location: "Ground floor",
-      startTime: "11:00am",
-      numParticipants: 23,
-      subjectAreas: ["mathematics"],
-    },
-  ];
-
-  const getTagColor = (subject) => {
-    switch (subject) {
-      case "computer science":
-        return "green";
-      case "social":
-        return "geekblue";
-      case "physics":
-        return "volcano";
-      case "literature":
-        return "gold";
-      case "chemistry":
-        return "purple";
-      case "arts":
-        return "magenta";
-      case "mathematics":
-        return "orange";
-      case "social science":
-        return "cyan";
-      case "science":
-        return "pink";
-      case "economics":
-        return "blue";
-      case "humanities":
-        return "red";
-      case "engineering":
-        return "lime";
-      default:
-        return "default";
-    }
-  };
-
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
+  if (!location) {
+    return (
+      <div className="my-auto mx-auto text-center">
+        <Title level={3} style={{ fontFamily: "Montserrat, sans-serif" }}>
+          Error reading search location!
+        </Title>
+        <Link href="/" passHref>
+          <Button>Back to Search</Button>
+        </Link>
+      </div>
+    );
+  }
 
   return (
-    <div className="mt-8">
-      <Title level={2} className="mb-2">
-        Study Groups
-      </Title>
-      <Text className="mb-8">
-        16 study groups found nearby Learning Teaching's Building, Monash University
-      </Text>
-      <Table className="mt-2"
+    <div className="w-full px-4 sm:px-6 lg:px-8">
+      <h1 className="text-3xl font-bold my-6">Study Groups</h1>
+      {location && (
+        <p className="mb-6">
+          10 study groups found nearby {location}
+          {lat && lng && ` (${lat.toFixed(6)}, ${lng.toFixed(6)})`}
+        </p>
+      )}
+      <Table
+        dataSource={sampleData}
         columns={columns}
-        dataSource={data}
-        pagination={{
-          pageSize: 10,
-          current: currentPage,
-          total: 16,
-          showSizeChanger: false,
-          onChange: handlePageChange,
-        }}
+        onRow={(record) => ({
+          onClick: () => handleRowClick(record),
+        })}
+        rowClassName="cursor-pointer hover:bg-gray-100"
+        scroll={{ x: true }}
       />
+
+      <Modal
+        title={selectedGroup?.studyGroup}
+        open={modalVisible}
+        onCancel={() => setModalVisible(false)}
+        footer={[
+          <Button key="back" onClick={() => setModalVisible(false)}>
+            Cancel
+          </Button>,
+          <Button key="join" type="primary" onClick={handleJoinGroup}>
+            Join Group
+          </Button>,
+        ]}
+      >
+        {selectedGroup && (
+          <div>
+            <p>
+              <strong>Group Owner:</strong> {selectedGroup.groupOwner}
+            </p>
+            <p>
+              <strong>Location:</strong> {selectedGroup.location}
+            </p>
+            <p>
+              <strong>Start Time:</strong> {selectedGroup.startTime}
+            </p>
+            <p>
+              <strong>Participants:</strong> {selectedGroup.participants}{" "}
+              <UserOutlined />
+            </p>
+            <p>
+              <strong>Subject Areas:</strong>
+            </p>
+            <div>
+              {selectedGroup.subjectAreas.map((tag) => (
+                <Tag color="blue" key={tag}>
+                  {tag.toUpperCase()}
+                </Tag>
+              ))}
+            </div>
+          </div>
+        )}
+      </Modal>
     </div>
   );
 };
 
-export default Results;
+export default ResultsPage;

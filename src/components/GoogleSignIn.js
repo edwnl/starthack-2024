@@ -31,7 +31,7 @@ export default function SignIn() {
 
   return (
     <Button
-      className="flex items-center justify-center h-8"
+      className="items-center justify-center h-8"
       onClick={signInWithGoogle}
       icon={<GoogleOutlined />}
       type="primary"

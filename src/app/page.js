@@ -1,14 +1,36 @@
 "use client";
 
 import BookBackground from "@/components/BookBackground";
-import LargeSearchBar from "@/components/LargeSearchBar";
-import { useAuth } from "@/contexts/AuthContext";
-import { Typography } from "antd";
+import { Button, Typography } from "antd";
 
 const { Title } = Typography;
 
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import LocationInput from "@/components/LocationInput";
+import { SearchOutlined } from "@ant-design/icons";
+
 export default function Home() {
-  const { user } = useAuth();
+  const router = useRouter();
+  const [selectedPlace, setSelectedPlace] = useState(null);
+
+  const handlePlaceChange = (place) => {
+    setSelectedPlace(place);
+  };
+
+  const handleSearch = () => {
+    if (selectedPlace && selectedPlace.geometry) {
+      const { lat, lng } = selectedPlace.geometry.location;
+      const encodedLocation = encodeURIComponent(
+        selectedPlace.formatted_address,
+      );
+      router.push(
+        `/results?lat=${lat()}&lng=${lng()}&location=${encodedLocation}`,
+      );
+    } else {
+      console.error("No valid place selected");
+    }
+  };
 
   return (
     <div className="flex-grow flex flex-col items-center justify-center p-4">
@@ -32,7 +54,21 @@ export default function Home() {
           Track, collaborate, and compete with study groups
           <span style={{ fontWeight: "500" }}> effortlessly</span>.
         </Title>
-        <LargeSearchBar />
+        <div className="w-full max-w-2xl mx-auto relative">
+          <LocationInput
+            onPlaceChange={handlePlaceChange}
+            placeholder="Where are you?"
+            className="pr-20 w-full px-4 py-3 text-base border rounded-xl transition-colors "
+          />
+          <div className="absolute right-1 top-1/2 transform -translate-y-1/2">
+            <Button
+              type="primary"
+              icon={<SearchOutlined />}
+              onClick={handleSearch}
+              className="p-4 mr-1 rounded-xl"
+            ></Button>
+          </div>
+        </div>
       </div>
     </div>
   );
