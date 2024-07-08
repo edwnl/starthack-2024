@@ -125,55 +125,34 @@ export default function Friends() {
 
   return (
     <ProtectedPage>
-      <div className="flex w-full">
-        <div className="flex flex-col p-4 w-2/3">
-          <div className="mb-5">
-            <Title
-              level={2}
-              style={{
-                fontSize: "48px",
-                fontWeight: "500",
-                marginBottom: "0.5rem",
-              }}
-            >
-              {getTitle()}
-            </Title>
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-start w-full sm:w-1/2 mb-4 gap-3 sm:gap-5">
-              <span
-                className="text-2xl font-medium"
-                style={{ fontSize: "1rem" }}
-              >
-                {getSubtitle()}
-              </span>
-              <Button
-                type="primary"
-                onClick={showModal}
-                style={{
-                  backgroundColor: "#1890FF",
-                  borderColor: "#1890FF",
-                  boxShadow: "none",
-                  textDecoration: "none",
-                }}
-              >
-                Add Friend
-              </Button>
-            </div>
-            <AddFriendModal
-              isOpen={isModalOpen}
-              onOk={handleOk}
-              onCancel={handleCancel}
-            />
+      <div className="w-full mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="py-6">
+          <h1 className="text-3xl font-bold mb-2">{getTitle()}</h1>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6">
+            <p className="text-sm text-gray-600 mb-2 sm:mb-0">
+              {getSubtitle()}
+            </p>
+            <Button type="primary" onClick={showModal}>
+              Add Friend
+            </Button>
           </div>
-          <div className="w-full mb-4">
-            <Search
-              placeholder="Search friends"
-              onSearch={onSearch}
-              className="w-full"
-            />
-          </div>
-          <div className="h-[500px] overflow-y-auto">
-            <Tabs defaultActiveKey="1" items={items} onChange={onChange} />
-          </div>
+          <AddFriendModal
+            isOpen={isModalOpen}
+            onOk={handleOk}
+            onCancel={handleCancel}
+          />
+        </div>
+
+        <div className="mb-6">
+          <Search
+            placeholder="Search friends"
+            onSearch={onSearch}
+            className="w-full"
+          />
+        </div>
+
+        <div className="pl-5 border rounded-lg overflow-hidden">
+          <Tabs defaultActiveKey="1" items={items} onChange={onChange} />
         </div>
       </div>
     </ProtectedPage>

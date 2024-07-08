@@ -64,8 +64,6 @@ const FriendRequestsList = ({
       style={{
         height: 400,
         overflow: "auto",
-        padding: "0 16px",
-        border: "1px solid rgba(140, 140, 140, 0.35)",
       }}
     >
       <InfiniteScroll
@@ -80,10 +78,7 @@ const FriendRequestsList = ({
           dataSource={friendRequests}
           renderItem={(request) => (
             <List.Item key={request.id}>
-              <List.Item.Meta
-                avatar={<Avatar src={request.avatar} />}
-                title={<a href="#">{request.name}</a>}
-              />
+              <List.Item.Meta title={<a href="#">{request.name}</a>} />
               <div>
                 <Button
                   type="primary"

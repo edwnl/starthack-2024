@@ -1,16 +1,29 @@
 // import React from "react";
 import { Avatar, Divider, List, Skeleton } from "antd";
 import InfiniteScroll from "react-infinite-scroll-component";
+import UserProfileModal from "@/components/UserProfileModal";
+import { useState } from "react";
 
 const FriendsList = ({ friends, loading, loadMoreFriends, hasMore }) => {
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const handleUserClick = (user) => {
+    setSelectedUser(user);
+    setModalVisible(true);
+  };
+
+  const handleModalClose = () => {
+    setSelectedUser(null);
+    setModalVisible(false);
+  };
+
   return (
     <div
       id="friendsListScrollableDiv"
       style={{
         height: 400,
         overflow: "auto",
-        padding: "0 16px",
-        border: "1px solid rgba(140, 140, 140, 0.35)",
       }}
     >
       <InfiniteScroll
@@ -24,15 +37,19 @@ const FriendsList = ({ friends, loading, loadMoreFriends, hasMore }) => {
         <List
           dataSource={friends}
           renderItem={(friend) => (
-            <List.Item key={friend.id}>
-              <List.Item.Meta
-                avatar={<Avatar src={friend.avatar} />}
-                title={<a href="#">{friend.name}</a>}
-              />
+            <List.Item key={friend.id} onClick={() => handleUserClick(friend)}>
+              <List.Item.Meta title={<a href="#">{friend.name}</a>} />
             </List.Item>
           )}
         />
       </InfiniteScroll>
+      {selectedUser && (
+        <UserProfileModal
+          visible={modalVisible}
+          onClose={handleModalClose}
+          user={selectedUser}
+        />
+      )}
     </div>
   );
 };
