@@ -5,6 +5,7 @@ import "antd/dist/reset.css";
 import { ConfigProvider } from "antd";
 import ClientLayout from "@/components/ClientLayout";
 import themeConfig from "@/theme/themeConfig";
+import Script from "next/script";
 
 const montserrat = Montserrat({ subsets: ["latin"] });
 
@@ -19,6 +20,10 @@ export default function RootLayout({ children }) {
       <link
         href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap"
         rel="stylesheet"
+      />
+      <Script
+        src={`https://maps.googleapis.com/maps/api/js?key=${process.env.GOOGLE_MAPS_API_KEY}&libraries=places`}
+        strategy="afterInteractive"
       />
       <body className={montserrat.className}>
         <AuthProvider>
