@@ -61,13 +61,13 @@ const StatsPage = () => {
         </div>
 
         {statsData.map((stats, index) => (
-          <div key={index} className="shadow-sm overflow-hidden">
-            <div className="border border-black p-4 rounded mb-4">
-              <h2 className="text-2xl font-semibold mb-2">{stats.period}</h2>
-              <p className="text-gray-500 text-sm mb-4">
+          <div key={index} className="shadow-sm overflow-hidden mb-4">
+            <div className="border border-black p-4 rounded">
+              <h2 className="text-2xl font-semibold">{stats.period}</h2>
+              <p className="text-gray-500 text-sm">
                 Tracking from {stats.trackingFrom}
               </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 ">
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 ">
                 <Statistic
                   title="Total Study Time"
                   value={stats.totalTime}

@@ -21,6 +21,7 @@ import dayjs from "dayjs";
 import { createGroup } from "./action";
 import { useAuth } from "@/contexts/AuthContext";
 import ProtectedPage from "@/components/ProtectedPage";
+import LocationInput from "@/components/LocationInput";
 
 const { Title } = Typography;
 
@@ -106,10 +107,12 @@ const CreateGroup = () => {
 
   return (
     <ProtectedPage>
-      <div className="w-full max-w-3xl mx-auto my-10 px-4 sm:px-6 lg:px-8">
-        <div className="py-6 text-center">
+      <div className="w-full mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="py-6">
           <h1 className="text-3xl font-bold">Create a Group</h1>
-          <div className={"text-sm"}>Use this form to create a group! </div>
+          <p className="text-sm text-gray-600 mb-2 sm:mb-0">
+            Use this form to create a group!
+          </p>
         </div>
 
         <div className="bg-white shadow-sm rounded-lg overflow-hidden">
@@ -118,7 +121,6 @@ const CreateGroup = () => {
             name="createGroup"
             onFinish={onFinish}
             layout="vertical"
-            className="p-6"
           >
             <Form.Item
               name="name"

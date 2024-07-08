@@ -43,8 +43,8 @@ const Leaderboard = () => {
   return (
     <div className="w-full mx-auto px-4 sm:px-6 lg:px-8">
       <div className="py-6">
-        <h1 className="text-3xl font-bold mb-2">Leaderboard</h1>
-        <div className="flex flex-col justify-between items-start mb-4">
+        <h1 className="text-3xl font-bold">Leaderboard</h1>
+        <div className="flex flex-col justify-between items-start">
           <p className="text-sm text-gray-600">
             Last updated: {lastUpdated.toLocaleString()}
           </p>

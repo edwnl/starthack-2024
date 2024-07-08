@@ -40,7 +40,7 @@ export default function SignOut() {
       onClick={handleSignOut}
       icon={<LogoutOutlined />}
     >
-      Sign Out
+      Logout
     </Button>
   );
 }
