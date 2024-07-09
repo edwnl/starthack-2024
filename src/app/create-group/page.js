@@ -79,13 +79,17 @@ const CreateGroup = () => {
         },
       };
 
+      if (!groupData.groupSizeLimit) {
+        groupData.groupSizeLimit = -1;
+      }
+
       const serializedData = JSON.stringify(groupData);
       const result = await createGroup(serializedData);
 
       if (result.success) {
         notification.success({
           message: "Group Created",
-          description: `Group successfully created with ID: ${result.groupId}`,
+          description: `Group successfully created!`,
         });
         form.resetFields();
         setSelectedPlace(null);

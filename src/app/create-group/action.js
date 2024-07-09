@@ -6,12 +6,24 @@ export async function createGroup(serializedData) {
   const db = admin.firestore();
   const groupData = JSON.parse(serializedData);
 
+  // Fetch the user's data to get the username
+  const userDoc = await db
+    .collection("user-data")
+    .doc(groupData.hostUser)
+    .get();
+  if (!userDoc.exists) {
+    throw new Error("Host user not found");
+  }
+  const userData = userDoc.data();
+  const hostUsername = userData.username;
+
   try {
     // Prepare the data to be stored
     const dataToStore = {
       name: groupData.name,
       description: groupData.description,
       hostUser: groupData.hostUser,
+      hostUsername: hostUsername,
       startTime: groupData.startTime,
       endTime: groupData.endTime,
       groupSizeLimit: groupData.groupSizeLimit,
