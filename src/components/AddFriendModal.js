@@ -1,6 +1,9 @@
+"use client";
+
 import React from "react";
 import { Modal, Input, Typography, message } from "antd";
 import { sendFriendRequest } from "@/app/friends/actions";
+import { getAuth } from "firebase/auth";
 
 const { Search } = Input;
 const { Text } = Typography;
@@ -8,8 +11,15 @@ const { Text } = Typography;
 const AddFriendModal = ({ isOpen, onOk, onCancel }) => {
   const handleSearch = async (value) => {
     try {
-      //HARD-CODED: Replace with actual user ID
-      const userId = "username123";
+      const auth = getAuth();
+      const user = auth.currentUser;
+
+      if (!user) {
+        message.error("You must be logged in to send friend requests", 5);
+        return;
+      }
+
+      const userId = user.uid;
       const result = await sendFriendRequest(userId, value);
       if (result.success) {
         message.success("Friend request sent successfully", 5);

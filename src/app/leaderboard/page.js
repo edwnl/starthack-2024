@@ -3,7 +3,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Button, Table, Tabs } from "antd";
+import { Button, notification, Table, Tabs } from "antd";
 import { ReloadOutlined } from "@ant-design/icons";
 import UserProfileModal from "@/components/UserProfileModal";
 import { getLeaderboardData } from "./actions";
@@ -48,6 +48,11 @@ const Leaderboard = () => {
 
   const handleUpdateRequest = () => {
     updateAllLeaderboards();
+    notification.success({
+      message: "Updated Successfully",
+      description: "You have successfully updated the leaderboard.",
+      placement: "bottomRight",
+    });
   };
 
   const handleRowClick = (record) => {
