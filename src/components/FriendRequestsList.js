@@ -7,6 +7,7 @@ import {
   acceptFriendRequest,
   declineFriendRequest,
 } from "@/app/friends/actions";
+import { useAuth } from "@/contexts/AuthContext";
 
 const FriendRequestsList = ({
   friendRequests,
@@ -16,14 +17,17 @@ const FriendRequestsList = ({
   onRequestHandled,
   updateFriendRequests,
 }) => {
+  const { user } = useAuth(); // Use the useAuth hook to get the current user
+
   const handleAccept = async (requesterId) => {
     try {
-      // Assume we have the current user's ID
-      const userId = "username123";
-      const result = await acceptFriendRequest(userId, requesterId);
+      if (!user) {
+        message.error("You must be logged in to accept friend requests");
+        return;
+      }
+      const result = await acceptFriendRequest(user.uid, requesterId);
       if (result.success) {
         message.success("Friend request accepted");
-        // Remove the accepted request from the list
         updateFriendRequests(
           friendRequests.filter((request) => request.id !== requesterId),
         );
@@ -39,12 +43,13 @@ const FriendRequestsList = ({
 
   const handleDecline = async (requesterId) => {
     try {
-      // Assume we have the current user's ID
-      const userId = "username123";
-      const result = await declineFriendRequest(userId, requesterId);
+      if (!user) {
+        message.error("You must be logged in to decline friend requests");
+        return;
+      }
+      const result = await declineFriendRequest(user.uid, requesterId);
       if (result.success) {
         message.success("Friend request declined");
-        // Remove the declined request from the list
         updateFriendRequests(
           friendRequests.filter((request) => request.id !== requesterId),
         );

@@ -2,25 +2,39 @@
 
 import admin from "../../../firebase/admin-config";
 
-export async function sendFriendRequest(userId, friendUsername) {
+async function getUserIdByUsername(username) {
+  const db = admin.firestore();
+  const usersSnapshot = await db
+    .collection("user-data")
+    .where("username", "==", username)
+    .limit(1)
+    .get();
+
+  if (usersSnapshot.empty) {
+    throw new Error("User not found");
+  }
+
+  return usersSnapshot.docs[0].id;
+}
+
+export async function sendFriendRequest(senderId, receiverUsername) {
   const db = admin.firestore();
   try {
-    const senderRef = db.collection("user-data").doc(userId);
-    const receiverRef = db.collection("user-data").doc(friendUsername);
+    const receiverId = await getUserIdByUsername(receiverUsername);
 
-    // Update the sender's document to add the friend request to sent
+    const senderRef = db.collection("user-data").doc(senderId);
+    const receiverRef = db.collection("user-data").doc(receiverId);
+
     await senderRef.update({
       "friends.pendingRequests.sentRequests":
-        admin.firestore.FieldValue.arrayUnion(friendUsername),
+        admin.firestore.FieldValue.arrayUnion(receiverId),
     });
 
-    // Update the receiver's document to add the friend request to received
     await receiverRef.update({
       "friends.pendingRequests.receivedRequests":
-        admin.firestore.FieldValue.arrayUnion(userId),
+        admin.firestore.FieldValue.arrayUnion(senderId),
     });
 
-    // Must pass through stringify before being returned
     return JSON.parse(JSON.stringify({ success: true }));
   } catch (error) {
     console.error("Error sending friend request:", error);
@@ -28,27 +42,24 @@ export async function sendFriendRequest(userId, friendUsername) {
   }
 }
 
-export async function acceptFriendRequest(userId, friendUsername) {
+export async function acceptFriendRequest(userId, friendId) {
   const db = admin.firestore();
   try {
     const userRef = db.collection("user-data").doc(userId);
-    const friendRef = db.collection("user-data").doc(friendUsername);
+    const friendRef = db.collection("user-data").doc(friendId);
 
-    // Update the user's document
     await userRef.update({
       "friends.pendingRequests.receivedRequests":
-        admin.firestore.FieldValue.arrayRemove(friendUsername),
-      activeFriends: admin.firestore.FieldValue.arrayUnion(friendUsername),
+        admin.firestore.FieldValue.arrayRemove(friendId),
+      activeFriends: admin.firestore.FieldValue.arrayUnion(friendId),
     });
 
-    // Update the friend's document
     await friendRef.update({
       "friends.pendingRequests.sentRequests":
         admin.firestore.FieldValue.arrayRemove(userId),
       activeFriends: admin.firestore.FieldValue.arrayUnion(userId),
     });
 
-    // Must pass through stringify before being returned
     return JSON.parse(JSON.stringify({ success: true }));
   } catch (error) {
     console.error("Error accepting friend request:", error);
@@ -56,28 +67,25 @@ export async function acceptFriendRequest(userId, friendUsername) {
   }
 }
 
-export async function declineFriendRequest(userId, friendUsername) {
+export async function declineFriendRequest(userId, friendId) {
   const db = admin.firestore();
   try {
     const userRef = db.collection("user-data").doc(userId);
-    const friendRef = db.collection("user-data").doc(friendUsername);
+    const friendRef = db.collection("user-data").doc(friendId);
 
-    // Update the user's document
     await userRef.update({
       "friends.pendingRequests.receivedRequests":
-        admin.firestore.FieldValue.arrayRemove(friendUsername),
+        admin.firestore.FieldValue.arrayRemove(friendId),
     });
 
-    // Update the friend's document
     await friendRef.update({
       "friends.pendingRequests.sentRequests":
         admin.firestore.FieldValue.arrayRemove(userId),
     });
 
-    // Must pass through stringify before being returned
     return JSON.parse(JSON.stringify({ success: true }));
   } catch (error) {
-    console.error("Error accepting friend request:", error);
+    console.error("Error declining friend request:", error);
     return JSON.parse(JSON.stringify({ success: false, error: error.message }));
   }
 }
@@ -94,16 +102,19 @@ export async function getAllFriends(userId) {
     const userData = userDoc.data();
     const activeFriends = userData.friends.activeFriends || [];
 
-    const uniqueFriendIds = [...new Set(activeFriends)];
-
-    const friends = uniqueFriendIds.map((friendId, index) => ({
-      id: friendId,
-      name: friendId,
-      avatar: `https://randomuser.me/api/portraits/thumb/men/${index % 100}.jpg`, //auto-generated random images
-    }));
+    const friendsData = await Promise.all(
+      activeFriends.map(async (friendId) => {
+        const friendDoc = await db.collection("user-data").doc(friendId).get();
+        const friendData = friendDoc.data();
+        return {
+          id: friendId,
+          name: friendData.username,
+        };
+      }),
+    );
 
     return JSON.parse(
-      JSON.stringify({ success: true, friends, hasMore: false }),
+      JSON.stringify({ success: true, friends: friendsData, hasMore: false }),
     );
   } catch (error) {
     console.error("Error getting friends:", error);
@@ -124,16 +135,24 @@ export async function getAllFriendRequests(userId) {
     const receivedFriendRequests =
       userData.friends.pendingRequests?.receivedRequests || [];
 
-    const friendRequests = receivedFriendRequests.map((requesterId, index) => ({
-      id: requesterId,
-      name: requesterId,
-      avatar: `https://randomuser.me/api/portraits/thumb/women/${index % 100}.jpg`, //auto-generated random images
-    }));
+    const friendRequestsData = await Promise.all(
+      receivedFriendRequests.map(async (requesterId) => {
+        const requesterDoc = await db
+          .collection("user-data")
+          .doc(requesterId)
+          .get();
+        const requesterData = requesterDoc.data();
+        return {
+          id: requesterId,
+          name: requesterData.username,
+        };
+      }),
+    );
 
     return JSON.parse(
       JSON.stringify({
         success: true,
-        friendRequests,
+        friendRequests: friendRequestsData,
         hasMore: false,
       }),
     );
