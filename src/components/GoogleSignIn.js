@@ -4,12 +4,13 @@ import { auth } from "../../firebase/config";
 import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { Button, notification } from "antd";
 import { GoogleOutlined } from "@ant-design/icons";
+import { createUserData } from "@/app/actions";
 
 export default function SignIn() {
   const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
     try {
-      await signInWithPopup(auth, provider);
+      const result = await signInWithPopup(auth, provider);
 
       // Show success notification
       notification.success({
@@ -17,6 +18,8 @@ export default function SignIn() {
         description: "You have successfully signed in with Google.",
         placement: "bottomRight",
       });
+
+      await createUserData(result.user.uid);
     } catch (error) {
       console.error("Error signing in with Google", error);
 
