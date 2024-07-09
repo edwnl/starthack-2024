@@ -1,12 +1,15 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Table, Modal, Button, Tag, Spin } from "antd";
+import { Table, Modal, Button, Tag, Spin, notification } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import { useRouter, useSearchParams } from "next/navigation";
 import Title from "antd/es/typography/Title";
 import Link from "next/link";
 import { fetchGroups } from "./actions";
+import { useAuth } from "@/contexts/AuthContext";
+import { checkActiveSession, joinGroup } from "@/app/active-session/actions";
+import { useActiveSession } from "@/contexts/ActiveSessionContext";
 
 const ResultsPage = () => {
   const searchParams = useSearchParams();
@@ -19,6 +22,9 @@ const ResultsPage = () => {
   const [groups, setGroups] = useState([]);
   const [loading, setLoading] = useState(true);
   const [ignoreLocation, setIgnoreLocation] = useState(false);
+  const { user } = useAuth(); // Get the current user from AuthContext
+  const router = useRouter();
+  const { updateActiveSession } = useActiveSession();
 
   useEffect(() => {
     if (ignoreLocation) {
@@ -65,10 +71,43 @@ const ResultsPage = () => {
     setModalVisible(true);
   };
 
-  const handleJoinGroup = () => {
-    // Implement join group functionality here
-    console.log(`Joined group: ${selectedGroup.studyGroup}`);
-    setModalVisible(false);
+  const handleJoinGroup = async () => {
+    if (!user) {
+      notification.error({
+        message: "Authentication Error",
+        description: "Please log in to join a group.",
+      });
+      setModalVisible(false);
+      return;
+    }
+
+    try {
+      const hasActiveSession = await checkActiveSession(user.uid);
+
+      if (hasActiveSession) {
+        notification.error({
+          message: "Join Group Error",
+          description: "You are already part of an active session.",
+        });
+        setModalVisible(false);
+      } else {
+        await joinGroup(user.uid, selectedGroup.id);
+        updateActiveSession(true);
+        notification.success({
+          message: "Join Group Success",
+          description: `You have successfully joined the group: ${selectedGroup.name}`,
+        });
+        setModalVisible(false);
+        router.push("/active-session");
+      }
+    } catch (error) {
+      console.error("[handleJoinGroup] Error:", error);
+      notification.error({
+        message: "Join Group Error",
+        description:
+          "An error occurred while joining the group. Please try again.",
+      });
+    }
   };
 
   const columns = [

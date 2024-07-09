@@ -11,6 +11,8 @@ import {
   Modal,
   Col,
   Row,
+  Spin,
+  notification,
 } from "antd";
 import {
   ClockCircleOutlined,
@@ -18,10 +20,13 @@ import {
   LogoutOutlined,
   UserOutlined,
   LaptopOutlined,
+  HomeOutlined,
 } from "@ant-design/icons";
 import UserProfileModal from "@/components/UserProfileModal";
-
-// Assuming you have a UserProfileModal component
+import { useRouter } from "next/navigation";
+import { getActiveSession, leaveSession } from "./actions";
+import { useAuth } from "@/contexts/AuthContext";
+import { useActiveSession } from "@/contexts/ActiveSessionContext"; // We'll create these actions
 
 const ActiveSession = () => {
   const [minutes, setMinutes] = useState(0);
@@ -29,82 +34,109 @@ const ActiveSession = () => {
   const [isBrowserLocked, setIsBrowserLocked] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [isProfileModalVisible, setIsProfileModalVisible] = useState(false);
-
-  // Mock data for the study group details
-  const sessionDetails = {
-    studyGroup: "Algorithms & Data Structures",
-    host: "Ashley Zhang",
-    location: "Baillieu Library, Level 2 South Side",
-    startTime: "Monday, July 1st, 2024, 10:00am",
-    subjectAreas: ["comp sci", "leetcode", "algo"],
-    description:
-      "Join our Algorithms & Data Structures Study Group to enhance your understanding of essential computer science concepts through collaborative learning and practical exercises.",
-  };
-
-  // Mock data for participants
-  const participants = [
-    { id: 1, name: "Ashley Zhang", avatar: "https://example.com/avatar1.jpg" },
-    { id: 2, name: "John Doe", avatar: "https://example.com/avatar2.jpg" },
-    { id: 3, name: "Jane Smith", avatar: "https://example.com/avatar3.jpg" },
-    // Add more participants as needed
-  ];
+  const [sessionDetails, setSessionDetails] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const { updateActiveSession } = useActiveSession();
+  const { user } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setMinutes((prevMinutes) => prevMinutes + 1);
-    }, 60000); // Update every minute
+    const fetchSessionDetails = async () => {
+      if (user) {
+        try {
+          const session = await getActiveSession(user.uid);
+          console.log(session);
+          setSessionDetails(session);
+        } catch (error) {
+          console.error(
+            "[fetchSessionDetails] Error fetching session details:",
+            error,
+          );
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
 
-    return () => clearInterval(timer);
-  }, []);
+    fetchSessionDetails();
+  }, [user]);
 
-  const handleLeaveSession = () => {
-    // Implement leave session logic hereCertainly! I'll modify the "Lock Phone for Extra Minutes" section to create two inline boxes: one for locking the browser and another for locking the phone. Here's how you can update your Active Session component to achieve this layout:
-    //
-    // jsx
-    //
-    // Copy
-    // "use client";
-    //
-    // import React, { useState, useEffect } from "react";
-    // import { Card, Statistic, Switch, Row, Col } from "antd";
-    // import { ClockCircleOutlined, LaptopOutlined, MobileOutlined } from "@ant-design/icons";
-    //
-    // const ActiveSession = () => {
-    //   const [minutes, setMinutes] = useState(0);
-    //   const [isBrowserLocked, setIsBrowserLocked] = useState(false);
-    //   const [isPhoneLocked, setIsPhoneLocked] = useState(false);
-    //
-    //   // ... other states and useEffect
-    //
-    //   const handleBrowserLock = (checked) => {
-    //     setIsBrowserLocked(checked);
-    //     console.log("Browser lock toggled:", checked);
-    //   };
-    console.log("Leaving session");
+  useEffect(() => {
+    if (sessionDetails) {
+      const startTime = new Date(sessionDetails.startTime).getTime();
+      const currentTime = new Date().getTime();
+      const elapsedMinutes = Math.floor((currentTime - startTime) / 60000);
+      setMinutes(elapsedMinutes);
+
+      const timer = setInterval(() => {
+        setMinutes((prevMinutes) => prevMinutes + 1);
+      }, 60000); // Update every minute
+
+      return () => clearInterval(timer);
+    }
+  }, [sessionDetails]);
+
+  const handleLeaveSession = async () => {
+    try {
+      await leaveSession(user.uid, sessionDetails.id);
+      updateActiveSession(false); // Update the global state
+      notification.success({
+        message: "Left Session",
+        description: "You have successfully left the session.",
+        placement: "bottomRight",
+      });
+      router.push("/"); // Redirect to home page after leaving the session
+    } catch (error) {
+      console.error("[handleLeaveSession] Error leaving session:", error);
+    }
   };
 
   const handleBrowserLock = (checked) => {
     setIsBrowserLocked(checked);
-    console.log("Browser lock toggled:", checked);
+    // Implement browser lock logic here
   };
 
   const handlePhoneLock = (checked) => {
     setIsPhoneLocked(checked);
     // Implement phone lock logic here
-    console.log("Phone lock toggled:", checked);
   };
 
-  const handleParticipantClick = (user) => {
-    setSelectedUser(user);
+  const handleParticipantClick = (participant) => {
+    setSelectedUser(participant.id);
     setIsProfileModalVisible(true);
   };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Spin size="large" />
+      </div>
+    );
+  }
+
+  if (!sessionDetails) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen">
+        <h1 className="text-2xl font-bold mb-4">No Active Session</h1>
+        <p className="mb-4">You are not currently in any study session.</p>
+        <Button
+          type="primary"
+          icon={<HomeOutlined />}
+          onClick={() => router.push("/")}
+        >
+          Go to Home Page
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full mx-auto px-4 sm:px-6 lg:px-8">
       <div className="py-6">
         <h1 className="text-3xl font-bold">Active Session</h1>
         <p className="text-sm text-gray-600 mb-2 sm:mb-0">
-          Session started at {new Date().toLocaleString()}
+          Session started at{" "}
+          {new Date(sessionDetails.startTime).toLocaleString()}
         </p>
       </div>
 
@@ -149,20 +181,21 @@ const ActiveSession = () => {
       <Card className="mb-6">
         <h2 className="text-xl font-semibold mb-4">Session Details</h2>
         <p>
-          <strong>Study Group:</strong> {sessionDetails.studyGroup}
+          <strong>Study Group:</strong> {sessionDetails.name}
         </p>
         <p>
-          <strong>Host:</strong> {sessionDetails.host}
+          <strong>Host:</strong> {sessionDetails.hostUsername}
         </p>
         <p>
-          <strong>Location:</strong> {sessionDetails.location}
+          <strong>Location:</strong> {sessionDetails.location.building}
         </p>
         <p>
-          <strong>Start Time:</strong> {sessionDetails.startTime}
+          <strong>Start Time:</strong>{" "}
+          {new Date(sessionDetails.startTime).toLocaleString()}
         </p>
         <p>
           <strong>Subject Areas:</strong>{" "}
-          {sessionDetails.subjectAreas.map((subject) => (
+          {sessionDetails.studySubjects.map((subject) => (
             <span
               key={subject}
               className="inline-block bg-blue-100 text-blue-800 rounded-full px-2 py-1 text-xs font-semibold mr-2 mb-2"
@@ -179,16 +212,16 @@ const ActiveSession = () => {
       <Card className="mb-6">
         <h2 className="text-xl font-semibold mb-4">Participants</h2>
         <List
-          dataSource={participants}
-          renderItem={(item) => (
+          dataSource={sessionDetails.participants}
+          renderItem={(participant) => (
             <List.Item
-              key={item.id}
-              onClick={() => handleParticipantClick(item)}
+              key={participant.id}
+              onClick={() => handleParticipantClick(participant)}
               className="cursor-pointer hover:bg-gray-100"
             >
               <List.Item.Meta
-                avatar={<Avatar src={item.avatar} icon={<UserOutlined />} />}
-                title={item.name}
+                avatar={<Avatar icon={<UserOutlined />} />}
+                title={participant.username}
               />
             </List.Item>
           )}

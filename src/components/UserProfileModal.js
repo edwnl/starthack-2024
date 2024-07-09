@@ -7,12 +7,21 @@ import {
   FireOutlined,
 } from "@ant-design/icons";
 
-const UserProfileModal = ({ visible, onClose, user }) => {
-  if (!user) return null;
+const UserProfileModal = ({ visible, onClose, username }) => {
+  // Static data
+  const userData = {
+    username: username || "User",
+    stats: {
+      totalTime: 1200,
+      avgTime: 60,
+      groupsAttended: 15,
+      longestStreak: 7,
+    },
+  };
 
   return (
     <Modal
-      title={`${user.username}'s Profile`}
+      title={`${userData.username}'s Profile [DEMO DATA]`}
       open={visible}
       onCancel={onClose}
       footer={null}
@@ -20,22 +29,24 @@ const UserProfileModal = ({ visible, onClose, user }) => {
       <div className="space-y-4">
         <Statistic
           title="Total Study Time"
-          value={(user.stats && user.stats.totalTime) || 0}
+          value={userData.stats.totalTime}
+          suffix="minutes"
           prefix={<ClockCircleOutlined className="mr-2" />}
         />
         <Statistic
           title="Average Study Time"
-          value={(user.stats && user.stats.avgTime) || 0}
+          value={userData.stats.avgTime}
+          suffix="minutes"
           prefix={<BarChartOutlined className="mr-2" />}
         />
         <Statistic
           title="Total Groups Attended"
-          value={(user.stats && user.stats.groupsAttended) || 0}
+          value={userData.stats.groupsAttended}
           prefix={<TeamOutlined className="mr-2" />}
         />
         <Statistic
           title="Longest Streak"
-          value={(user.stats && user.stats.longestStreak) || 0}
+          value={userData.stats.longestStreak}
           suffix="days"
           prefix={<FireOutlined className="mr-2" />}
         />
