@@ -1,29 +1,35 @@
 "use client";
 
-import { auth } from "../../firebase/config";
-import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { useRouter } from "next/navigation";
 import { Button, notification } from "antd";
 import { GoogleOutlined } from "@ant-design/icons";
+import { signInWithGoogle } from "../../firebase/config";
 import { createUserData } from "@/app/actions";
 
 export default function SignIn() {
-  const signInWithGoogle = async () => {
-    const provider = new GoogleAuthProvider();
+  const router = useRouter();
+
+  const handleSignIn = async () => {
     try {
-      const result = await signInWithPopup(auth, provider);
+      const result = await signInWithGoogle();
 
-      // Show success notification
-      notification.success({
-        message: "Signed In",
-        description: "You have successfully signed in with Google.",
-        placement: "bottomRight",
-      });
+      // Check if the user is new
+      const userDataResult = await createUserData(result.user.uid);
 
-      await createUserData(result.user.uid);
+      if (userDataResult.isNewUser) {
+        // Redirect to create username page
+        router.push("/create-username");
+      } else {
+        notification.success({
+          message: "Signed In",
+          description: "You have successfully signed in with Google.",
+          placement: "bottomRight",
+        });
+        // Redirect to home page or dashboard
+        router.push("/");
+      }
     } catch (error) {
       console.error("Error signing in with Google", error);
-
-      // Show error notification
       notification.error({
         message: "Sign In Failed",
         description: "An error occurred while signing in. Please try again.",
@@ -35,7 +41,7 @@ export default function SignIn() {
   return (
     <Button
       className="items-center justify-center h-8"
-      onClick={signInWithGoogle}
+      onClick={handleSignIn}
       icon={<GoogleOutlined />}
       type="primary"
     >

@@ -18,13 +18,16 @@ import { useAuth } from "@/contexts/AuthContext";
 import SignIn from "./GoogleSignIn";
 import GroupzyLogo from "./GroupzyLogo";
 import SignOut from "./GoogleSignOut";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getActiveSession } from "@/app/active-session/actions";
+import { useActiveSession } from "@/contexts/ActiveSessionContext";
 
 const { Header } = Layout;
 
 export default function AppHeader() {
   const { user } = useAuth();
   const [mobileMenuVisible, setMobileMenuVisible] = useState(false);
+  const { hasActiveSession } = useActiveSession();
 
   const menuItems = [
     {
@@ -57,13 +60,13 @@ export default function AppHeader() {
     },
   ];
 
-  if (true) {
+  if (hasActiveSession) {
     menuItems.push({
       key: "active-session",
       icon: <ClockCircleOutlined />,
       label: "Active Session",
       href: "/active-session",
-      bold: true, // Making the Active Session menu item bold by default
+      bold: true,
     });
   }
 

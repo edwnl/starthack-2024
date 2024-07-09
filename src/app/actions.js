@@ -1,15 +1,24 @@
 "use server";
 
-import admin from "../../firebase/admin-config";
 import { db } from "../../firebase/config";
-import { doc, getDoc, setDoc, collection } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  setDoc,
+  collection,
+  query,
+  where,
+  getDocs,
+} from "firebase/firestore";
 
-export async function createUserData(uid) {
+export async function createUserData(uid, username = null) {
   if (!uid) {
     console.log(
       "[createUserData] Unable to create new user data, user is null.",
     );
-    return;
+    return JSON.parse(
+      JSON.stringify({ success: false, error: "User is null" }),
+    );
   }
   console.log(
     "[createUserData] Starting createUserData function for user:",
@@ -17,31 +26,36 @@ export async function createUserData(uid) {
   );
 
   try {
-    // Reference to the "user-data" collection
     const userDataCollection = collection(db, "user-data");
-
-    // Check if user exists in Firestore
     const userRef = doc(userDataCollection, uid);
-
-    let userSnap;
-    try {
-      userSnap = await getDoc(userRef);
-      console.log(
-        "[createUserData] Successfully fetched user document snapshot",
-      );
-    } catch (error) {
-      console.error("[createUserData] Error fetching user document:", error);
-      throw error;
-    }
+    const userSnap = await getDoc(userRef);
 
     if (!userSnap.exists()) {
       console.log(
-        "[createUserData] User document does not exist, creating new user data",
+        "[createUserData] User document does not exist, new user detected",
       );
 
-      // Create new user data
+      if (username === null) {
+        // This is a new user, but we don't have a username yet
+        console.log("[createUserData] Returning isNewUser: true");
+        return JSON.parse(JSON.stringify({ success: true, isNewUser: true }));
+      }
+
+      // Check if the username is unique
+      const usernameQuery = query(
+        userDataCollection,
+        where("username", "==", username),
+      );
+      const usernameQuerySnapshot = await getDocs(usernameQuery);
+
+      if (!usernameQuerySnapshot.empty) {
+        return JSON.parse(
+          JSON.stringify({ success: false, error: "Username already exists" }),
+        );
+      }
+
       const newUserData = {
-        username: `user_${uid.slice(0, 8)}`,
+        username: username ? username : `user_${uid.slice(0, 8)}`,
         activeSessionId: null,
         friends: {
           activeFriends: [],
@@ -77,28 +91,17 @@ export async function createUserData(uid) {
         },
       };
 
-      try {
-        await setDoc(userRef, newUserData);
-        console.log(
-          "[createUserData] Successfully set new user document in Firestore",
-        );
-      } catch (error) {
-        console.error(
-          "[createUserData] Error setting new user document:",
-          error,
-        );
-        throw error;
-      }
+      await setDoc(userRef, newUserData);
+      console.log(
+        "[createUserData] Successfully set new user document in Firestore",
+      );
+      return JSON.parse(JSON.stringify({ success: true, isNewUser: false }));
     } else {
       console.log(
-        "[createUserData] User document already exists, no action taken",
+        "[createUserData] User document already exists, existing user",
       );
+      return JSON.parse(JSON.stringify({ success: true, isNewUser: false }));
     }
-
-    console.log(
-      "[createUserData] createUserData function completed successfully",
-    );
-    return JSON.parse(JSON.stringify({ success: true }));
   } catch (error) {
     console.error(
       "[createUserData] Unexpected error in createUserData function:",
@@ -108,56 +111,45 @@ export async function createUserData(uid) {
   }
 }
 
-export async function addTodo(userId, text) {
-  const db = admin.firestore();
+export async function fetchUserProfile(userId) {
   try {
-    const docRef = await db
-      .collection("todo-test")
-      .doc(userId)
-      .collection("todos")
-      .add({
-        text,
-        createdAt: admin.firestore.FieldValue.serverTimestamp(),
-      });
-    // must pass through stringify before being returned
-    return JSON.parse(JSON.stringify({ success: true, id: docRef.id }));
+    const userDocRef = doc(db, "user-data", userId);
+    const userDocSnap = await getDoc(userDocRef);
+
+    if (userDocSnap.exists()) {
+      const userData = userDocSnap.data();
+      return {
+        username: userData.username,
+        stats: userData.stats || {
+          totalTime: 0,
+          avgTime: 0,
+          groupsAttended: 0,
+          longestStreak: 0,
+        },
+      };
+    } else {
+      console.error("[fetchUserProfile] User document does not exist");
+      return null;
+    }
   } catch (error) {
-    console.error("Error adding todo:", error);
-    return JSON.parse(JSON.stringify({ success: false, error: error.message }));
+    console.error("[fetchUserProfile] Error fetching user profile:", error);
+    throw error;
   }
 }
 
-export async function removeTodo(userId, todoId) {
-  const db = admin.firestore();
+export async function fetchUserData(userId) {
   try {
-    await db
-      .collection("todo-test")
-      .doc(userId)
-      .collection("todos")
-      .doc(todoId)
-      .delete();
-    // must pass through stringify before being returned
-    return JSON.parse(JSON.stringify({ success: true }));
-  } catch (error) {
-    console.error("Error removing todo:", error);
-    return JSON.parse(JSON.stringify({ success: false, error: error.message }));
-  }
-}
+    const userDocRef = doc(db, "user-data", userId);
+    const userDocSnap = await getDoc(userDocRef);
 
-export async function getTodos(userId) {
-  const db = admin.firestore();
-  try {
-    const snapshot = await db
-      .collection("todo-test")
-      .doc(userId)
-      .collection("todos")
-      .orderBy("createdAt", "desc")
-      .get();
-    const todos = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-    // must pass through stringify before being returned
-    return JSON.parse(JSON.stringify({ success: true, todos }));
+    if (userDocSnap.exists()) {
+      return userDocSnap.data();
+    } else {
+      console.error("[fetchUserData] User document does not exist");
+      return null;
+    }
   } catch (error) {
-    console.error("Error getting todos:", error);
-    return JSON.parse(JSON.stringify({ success: false, error: error.message }));
+    console.error("[fetchUserData] Error fetching user data:", error);
+    throw error;
   }
 }
