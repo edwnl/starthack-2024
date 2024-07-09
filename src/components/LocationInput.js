@@ -23,7 +23,11 @@ const LocationInput = ({
       console.log("Google Maps API is available");
       const autocompleteInstance = new window.google.maps.places.Autocomplete(
         inputRef.current,
-        { types: ["geocode"] },
+        {
+          types: ["establishment", "geocode"],
+          fields: ["vicinity", "geometry", "name", "formatted_address"],
+          componentRestrictions: { country: "au" },
+        },
       );
       autocompleteRef.current = autocompleteInstance;
 
@@ -48,7 +52,10 @@ const LocationInput = ({
       if (place) {
         console.log("Selected place:", place);
         onPlaceChange(place);
-        if (place.geometry) {
+        console.log(place);
+        if (place.name) {
+          setInputValue(place.name);
+        } else if (place.geometry) {
           setInputValue(place.formatted_address);
         }
       } else {
