@@ -24,8 +24,9 @@ export default function Home() {
       const encodedLocation = encodeURIComponent(
         selectedPlace.formatted_address,
       );
+      const encodedName = encodeURIComponent(selectedPlace.name);
       router.push(
-        `/results?lat=${lat()}&lng=${lng()}&location=${encodedLocation}`,
+        `/results?lat=${lat()}&lng=${lng()}&location=${encodedLocation}&name=${encodedName}`,
       );
     } else {
       console.error("No valid place selected");

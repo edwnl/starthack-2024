@@ -32,6 +32,7 @@ const sampleData = [
 const ResultsPage = () => {
   const searchParams = useSearchParams();
   const [location, setLocation] = useState("");
+  const [name, setName] = useState("");
   const [lat, setLat] = useState(null);
   const [lng, setLng] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
@@ -41,12 +42,14 @@ const ResultsPage = () => {
     const latParam = searchParams.get("lat");
     const lngParam = searchParams.get("lng");
     const locationParam = searchParams.get("location");
+    const nameParam = searchParams.get("name");
 
-    if (latParam && lngParam && locationParam) {
+    if (nameParam) setName(nameParam);
+    if (latParam && lngParam) {
       setLat(parseFloat(latParam));
       setLng(parseFloat(lngParam));
-      setLocation(decodeURIComponent(locationParam));
     }
+    if (locationParam) setLocation(decodeURIComponent(locationParam));
   }, [searchParams]);
 
   const handleRowClick = (record) => {
@@ -123,12 +126,11 @@ const ResultsPage = () => {
 
   return (
     <div className="w-full px-4 sm:px-6 lg:px-8">
-      <h1 className="text-3xl font-bold my-6">Study Groups</h1>
+      <h1 className="text-3xl font-bold my-6">
+        Study Groups {name && "at " + name}
+      </h1>
       {location && (
-        <p className="mb-6">
-          10 study groups found nearby {location}
-          {lat && lng && ` (${lat.toFixed(6)}, ${lng.toFixed(6)})`}
-        </p>
+        <p className="mb-6">10 study groups found nearby {location}</p>
       )}
       <Table
         dataSource={sampleData}
