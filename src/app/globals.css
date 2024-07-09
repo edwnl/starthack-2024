@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: Montserrat, system-ui, sans-serif;
+  }
+}
+
+:root {
+  --light-primary-color: white;
+  --dark-primary-color: #1f1f1f;
+}
+
+/* remove default hover styling from links */
+a:hover {
+  color: inherit !important;
+  text-decoration: none !important;
+}
