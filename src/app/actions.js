@@ -98,12 +98,13 @@ export async function createUserData(uid) {
     console.log(
       "[createUserData] createUserData function completed successfully",
     );
+    return JSON.parse(JSON.stringify({ success: true }));
   } catch (error) {
     console.error(
       "[createUserData] Unexpected error in createUserData function:",
       error,
     );
-    throw error;
+    return JSON.parse(JSON.stringify({ success: false, error: error.message }));
   }
 }
 
