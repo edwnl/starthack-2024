@@ -1,26 +1,53 @@
+// app/leaderboard/page.js
+
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Table, Tabs } from "antd";
-import {
-  allTimeData,
-  columns,
-  monthlyData,
-  weeklyData,
-  yearlyData,
-} from "./fakeData";
 import { ReloadOutlined } from "@ant-design/icons";
 import UserProfileModal from "@/components/UserProfileModal";
+import { getLeaderboardData } from "./actions";
+
 const { TabPane } = Tabs;
 
 const Leaderboard = () => {
+  const [leaderboardData, setLeaderboardData] = useState({
+    weekly: [],
+    monthly: [],
+    yearly: [],
+    lifetime: [],
+  });
   const [lastUpdated, setLastUpdated] = useState(new Date());
   const [selectedUser, setSelectedUser] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
 
+  const fetchLeaderboardData = async (timeFrame) => {
+    const result = await getLeaderboardData(timeFrame);
+    if (result.success) {
+      setLeaderboardData((prev) => ({ ...prev, [timeFrame]: result.data }));
+      setLastUpdated(new Date(result.lastUpdated));
+    } else {
+      console.error("Failed to fetch leaderboard data:", result.error);
+    }
+  };
+
+  const updateAllLeaderboards = async () => {
+    await Promise.all([
+      fetchLeaderboardData("weekly"),
+      fetchLeaderboardData("monthly"),
+      fetchLeaderboardData("yearly"),
+      fetchLeaderboardData("lifetime"),
+    ]);
+  };
+
+  useEffect(() => {
+    updateAllLeaderboards();
+    const interval = setInterval(updateAllLeaderboards, 5 * 60 * 1000); // Update every 5 minutes
+    return () => clearInterval(interval);
+  }, []);
+
   const handleUpdateRequest = () => {
-    console.log("Update requested");
-    setLastUpdated(new Date());
+    updateAllLeaderboards();
   };
 
   const handleRowClick = (record) => {
@@ -32,6 +59,26 @@ const Leaderboard = () => {
     setIsModalVisible(false);
     setSelectedUser(null);
   };
+
+  const columns = [
+    { title: "Rank", dataIndex: "rank", key: "rank" },
+    { title: "Username", dataIndex: "username", key: "username" },
+    {
+      title: "Total Study Time",
+      dataIndex: "totalStudyTime",
+      key: "totalStudyTime",
+    },
+    {
+      title: "Study Groups Attended",
+      dataIndex: "studyGroupsAttended",
+      key: "studyGroupsAttended",
+    },
+    {
+      title: "Longest Study Session",
+      dataIndex: "longestStudySession",
+      key: "longestStudySession",
+    },
+  ];
 
   const enhancedColumns = columns.map((col) => ({
     ...col,
@@ -62,28 +109,28 @@ const Leaderboard = () => {
         <Tabs defaultActiveKey="1">
           <TabPane tab="Weekly" key="1">
             <Table
-              dataSource={weeklyData}
+              dataSource={leaderboardData.weekly}
               columns={enhancedColumns}
               pagination={{ pageSize: 10 }}
             />
           </TabPane>
           <TabPane tab="Monthly" key="2">
             <Table
-              dataSource={monthlyData}
+              dataSource={leaderboardData.monthly}
               columns={enhancedColumns}
               pagination={{ pageSize: 10 }}
             />
           </TabPane>
           <TabPane tab="Yearly" key="3">
             <Table
-              dataSource={yearlyData}
+              dataSource={leaderboardData.yearly}
               columns={enhancedColumns}
               pagination={{ pageSize: 10 }}
             />
           </TabPane>
           <TabPane tab="All-Time" key="4">
             <Table
-              dataSource={allTimeData}
+              dataSource={leaderboardData.lifetime}
               columns={enhancedColumns}
               pagination={{ pageSize: 10 }}
             />

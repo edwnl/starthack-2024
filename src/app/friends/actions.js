@@ -5,18 +5,18 @@ import admin from "../../../firebase/admin-config";
 export async function sendFriendRequest(userId, friendUsername) {
   const db = admin.firestore();
   try {
-    const senderRef = db.collection("users-test").doc(userId);
-    const receiverRef = db.collection("users-test").doc(friendUsername);
+    const senderRef = db.collection("user-data").doc(userId);
+    const receiverRef = db.collection("user-data").doc(friendUsername);
 
     // Update the sender's document to add the friend request to sent
     await senderRef.update({
-      "pendingFriendRequests.sentFriendRequests":
+      "friends.pendingRequests.sentRequests":
         admin.firestore.FieldValue.arrayUnion(friendUsername),
     });
 
     // Update the receiver's document to add the friend request to received
     await receiverRef.update({
-      "pendingFriendRequests.receivedFriendRequests":
+      "friends.pendingRequests.receivedRequests":
         admin.firestore.FieldValue.arrayUnion(userId),
     });
 
@@ -31,19 +31,19 @@ export async function sendFriendRequest(userId, friendUsername) {
 export async function acceptFriendRequest(userId, friendUsername) {
   const db = admin.firestore();
   try {
-    const userRef = db.collection("users-test").doc(userId);
-    const friendRef = db.collection("users-test").doc(friendUsername);
+    const userRef = db.collection("user-data").doc(userId);
+    const friendRef = db.collection("user-data").doc(friendUsername);
 
     // Update the user's document
     await userRef.update({
-      "pendingFriendRequests.receivedFriendRequests":
+      "friends.pendingRequests.receivedRequests":
         admin.firestore.FieldValue.arrayRemove(friendUsername),
       activeFriends: admin.firestore.FieldValue.arrayUnion(friendUsername),
     });
 
     // Update the friend's document
     await friendRef.update({
-      "pendingFriendRequests.sentFriendRequests":
+      "friends.pendingRequests.sentRequests":
         admin.firestore.FieldValue.arrayRemove(userId),
       activeFriends: admin.firestore.FieldValue.arrayUnion(userId),
     });
@@ -59,18 +59,18 @@ export async function acceptFriendRequest(userId, friendUsername) {
 export async function declineFriendRequest(userId, friendUsername) {
   const db = admin.firestore();
   try {
-    const userRef = db.collection("users-test").doc(userId);
-    const friendRef = db.collection("users-test").doc(friendUsername);
+    const userRef = db.collection("user-data").doc(userId);
+    const friendRef = db.collection("user-data").doc(friendUsername);
 
     // Update the user's document
     await userRef.update({
-      "pendingFriendRequests.receivedFriendRequests":
+      "friends.pendingRequests.receivedRequests":
         admin.firestore.FieldValue.arrayRemove(friendUsername),
     });
 
     // Update the friend's document
     await friendRef.update({
-      "pendingFriendRequests.sentFriendRequests":
+      "friends.pendingRequests.sentRequests":
         admin.firestore.FieldValue.arrayRemove(userId),
     });
 
@@ -85,14 +85,14 @@ export async function declineFriendRequest(userId, friendUsername) {
 export async function getAllFriends(userId) {
   const db = admin.firestore();
   try {
-    const userDoc = await db.collection("users-test").doc(userId).get();
+    const userDoc = await db.collection("user-data").doc(userId).get();
 
     if (!userDoc.exists) {
       throw new Error("User not found");
     }
 
     const userData = userDoc.data();
-    const activeFriends = userData.activeFriends || [];
+    const activeFriends = userData.friends.activeFriends || [];
 
     const uniqueFriendIds = [...new Set(activeFriends)];
 
@@ -114,7 +114,7 @@ export async function getAllFriends(userId) {
 export async function getAllFriendRequests(userId) {
   const db = admin.firestore();
   try {
-    const userDoc = await db.collection("users-test").doc(userId).get();
+    const userDoc = await db.collection("user-data").doc(userId).get();
 
     if (!userDoc.exists) {
       throw new Error("User not found");
@@ -122,7 +122,7 @@ export async function getAllFriendRequests(userId) {
 
     const userData = userDoc.data();
     const receivedFriendRequests =
-      userData.pendingFriendRequests?.receivedFriendRequests || [];
+      userData.friends.pendingRequests?.receivedRequests || [];
 
     const friendRequests = receivedFriendRequests.map((requesterId, index) => ({
       id: requesterId,
