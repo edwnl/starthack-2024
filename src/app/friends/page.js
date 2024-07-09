@@ -6,6 +6,7 @@ import FriendsList from "@/components/FriendsList";
 import FriendRequestsList from "@/components/FriendRequestsList";
 import { getAllFriends, getAllFriendRequests } from "@/app/friends/actions";
 import ProtectedPage from "@/components/ProtectedPage";
+import { getAuth } from "firebase/auth";
 
 const { Title } = Typography;
 const { Search } = Input;
@@ -32,9 +33,16 @@ export default function Friends() {
     if (loading) return;
     setLoading(true);
     try {
-      //HARD-CODED: Replace with actual user ID
-      const userId = "username123";
+      const auth = getAuth();
+      const user = auth.currentUser;
 
+      if (!user) {
+        console.error("No user logged in");
+        return;
+      }
+
+      const userId = user.uid;
+      console.log(`######################## ${userId}`);
       const result = await getAllFriends(userId);
       if (result.success) {
         setFriends(result.friends);
@@ -53,8 +61,15 @@ export default function Friends() {
     if (loading) return;
     setLoading(true);
     try {
-      //HARD-CODED: Replace with actual user ID
-      const userId = "username123";
+      const auth = getAuth();
+      const user = auth.currentUser;
+
+      if (!user) {
+        console.error("No user logged in");
+        return;
+      }
+
+      const userId = user.uid;
       const result = await getAllFriendRequests(userId);
       if (result.success) {
         setFriendRequests(result.friendRequests);
