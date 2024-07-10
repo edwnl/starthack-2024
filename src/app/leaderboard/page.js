@@ -3,8 +3,12 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Button, Col, notification, Table, Tabs } from "antd";
-import { FireOutlined, ReloadOutlined } from "@ant-design/icons";
+import { Button, Card, Col, notification, Row, Table, Tabs } from "antd";
+import {
+  FireOutlined,
+  ReloadOutlined,
+  TrophyOutlined,
+} from "@ant-design/icons";
 import UserProfileModal from "@/components/UserProfileModal";
 import { getLeaderboardData } from "./actions";
 

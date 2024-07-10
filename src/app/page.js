@@ -1,9 +1,9 @@
 "use client";
 
 import BookBackground from "@/components/BookBackground";
-import { Button, Typography } from "antd";
+import { Button, Card, Typography } from "antd";
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
