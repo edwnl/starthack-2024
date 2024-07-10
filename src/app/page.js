@@ -8,7 +8,7 @@ const { Title } = Typography;
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import LocationInput from "@/components/LocationInput";
-import { SearchOutlined } from "@ant-design/icons";
+import { CoffeeOutlined, SearchOutlined } from "@ant-design/icons";
 
 export default function Home() {
   const router = useRouter();
@@ -33,6 +33,14 @@ export default function Home() {
     }
   };
 
+  // Static data for the event
+  const currentEvent = {
+    sponsor: "Starbucks",
+    location: "Any Starbucks location",
+    boost: "1.5x",
+    duration: "This week only",
+  };
+
   return (
     <div className="flex-grow flex flex-col items-center justify-center p-4">
       <div className="text-center lg:w-1/3 md:w-1/2 flex flex-col justify-center items-center">
@@ -55,6 +63,30 @@ export default function Home() {
           Track, collaborate, and compete with study groups
           <span style={{ fontWeight: "500" }}> effortlessly</span>.
         </Title>
+
+        {/* Event advertisement box */}
+        <Card
+          className="w-full mb-6 bg-gradient-to-r from-green-400 to-blue-500 text-white"
+          bordered={false}
+        >
+          <div className="flex items-center">
+            <CoffeeOutlined style={{ fontSize: "32px", marginRight: "16px" }} />
+            <div>
+              <Title level={4} style={{ color: "white", margin: 0 }}>
+                Special Event: {currentEvent.boost} Study Time Boost!
+              </Title>
+              <Text style={{ color: "white" }}>
+                Study at {currentEvent.location} for a {currentEvent.boost}{" "}
+                boost on your time.
+              </Text>
+              <br />
+              <Text style={{ color: "white" }}>
+                Sponsored by {currentEvent.sponsor}. {currentEvent.duration}
+              </Text>
+            </div>
+          </div>
+        </Card>
+
         <div className="w-full max-w-2xl mx-auto relative">
           <LocationInput
             onPlaceChange={handlePlaceChange}
