@@ -3,8 +3,12 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Button, notification, Table, Tabs } from "antd";
-import { ReloadOutlined } from "@ant-design/icons";
+import { Button, Card, Col, notification, Row, Table, Tabs } from "antd";
+import {
+  FireOutlined,
+  ReloadOutlined,
+  TrophyOutlined,
+} from "@ant-design/icons";
 import UserProfileModal from "@/components/UserProfileModal";
 import { getLeaderboardData } from "./actions";
 
@@ -20,6 +24,32 @@ const Leaderboard = () => {
   const [lastUpdated, setLastUpdated] = useState(new Date());
   const [selectedUser, setSelectedUser] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  // New state for awards
+  const [awards, setAwards] = useState({
+    streakAward: {
+      title: "Longest Streak",
+      prize: "Free Coffee for a Month",
+      sponsor: "Starbucks",
+    },
+    topPerformerAward: {
+      title: "Top Performer",
+      prize: "iPad Pro",
+      sponsor: "Apple",
+    },
+  });
+
+  const AwardCard = ({ award, icon }) => (
+    <Card className="mb-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white">
+      <div className="flex items-center">
+        {icon}
+        <div className="ml-4">
+          <h3 className="text-xl font-bold">{award.title}</h3>
+          <p className="text-lg">Prize: {award.prize}</p>
+          <p className="text-sm">Sponsored by {award.sponsor}</p>
+        </div>
+      </div>
+    </Card>
+  );
 
   const fetchLeaderboardData = async (timeFrame) => {
     const result = await getLeaderboardData(timeFrame);
@@ -108,6 +138,25 @@ const Leaderboard = () => {
             Request Update Now
           </Button>
         </div>
+      </div>
+
+      {/* Awards Section */}
+      <div className="mb-8">
+        <h2 className="text-2xl font-bold mb-4">This Week's Awards</h2>
+        <Row gutter={16}>
+          <Col xs={24} sm={12}>
+            <AwardCard
+              award={awards.streakAward}
+              icon={<FireOutlined style={{ fontSize: "32px" }} />}
+            />
+          </Col>
+          <Col xs={24} sm={12}>
+            <AwardCard
+              award={awards.topPerformerAward}
+              icon={<TrophyOutlined style={{ fontSize: "32px" }} />}
+            />
+          </Col>
+        </Row>
       </div>
 
       <div className="overflow-hidden">

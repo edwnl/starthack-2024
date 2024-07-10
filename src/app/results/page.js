@@ -54,11 +54,36 @@ const ResultsPage = () => {
     }
   }, [lat, lng, ignoreLocation]);
 
+  const sponsoredGroups = [
+    {
+      id: "sponsored1",
+      name: "Starbucks Study Group",
+      hostUsername: "Starbucks",
+      location: { building: "Starbucks Downtown" },
+      startTime: new Date("2024-07-11T14:00:00").toISOString(),
+      endTime: new Date("2024-07-11T16:00:00").toISOString(),
+      groupSizeLimit: 10,
+      studySubjects: ["coffee", "productivity"],
+      isSponsored: true,
+    },
+    {
+      id: "sponsored2",
+      name: "Library Tech Hub",
+      hostUsername: "City Library",
+      location: { building: "Central Library" },
+      startTime: new Date("2024-07-12T10:00:00").toISOString(),
+      endTime: new Date("2024-07-12T12:00:00").toISOString(),
+      groupSizeLimit: 15,
+      studySubjects: ["technology", "research"],
+      isSponsored: true,
+    },
+  ];
+
   const loadGroups = async () => {
     setLoading(true);
     try {
       const fetchedGroups = await fetchGroups(lat, lng, ignoreLocation);
-      setGroups(fetchedGroups);
+      setGroups([...sponsoredGroups, ...fetchedGroups]);
     } catch (error) {
       console.error("Error loading groups:", error);
     } finally {
@@ -115,6 +140,11 @@ const ResultsPage = () => {
       title: "Study Group",
       dataIndex: "name",
       key: "name",
+      render: (text, record) => (
+        <span>
+          {text} {record.isSponsored && <Tag color="gold">Sponsored</Tag>}
+        </span>
+      ),
     },
     {
       title: "Group Owner",
@@ -179,7 +209,8 @@ const ResultsPage = () => {
       </h1>
       {location && (
         <p className="mb-6">
-          {groups.length} study groups found within 5km from {location}
+          {groups.length - sponsoredGroups.length} study groups found within 5km
+          from {location}
         </p>
       )}
       {loading ? (
@@ -188,7 +219,7 @@ const ResultsPage = () => {
         </div>
       ) : (
         <>
-          {groups.length === 0 && !ignoreLocation && (
+          {groups.length === sponsoredGroups.length && !ignoreLocation && (
             <div className="text-center mb-4">
               <p>
                 No groups found within 5km. Would you like to see all available
@@ -204,8 +235,10 @@ const ResultsPage = () => {
             columns={columns}
             onRow={(record) => ({
               onClick: () => handleRowClick(record),
+              className: `cursor-pointer hover:bg-gray-100 ${
+                record.isSponsored ? "bg-blue-50" : ""
+              }`,
             })}
-            rowClassName="cursor-pointer hover:bg-gray-100"
             scroll={{ x: true }}
           />
         </>
@@ -226,6 +259,11 @@ const ResultsPage = () => {
       >
         {selectedGroup && (
           <div>
+            {selectedGroup.isSponsored && (
+              <Tag color="gold" className="mb-2">
+                Sponsored
+              </Tag>
+            )}
             <p>
               <strong>Group Owner:</strong> {selectedGroup.hostUsername}
             </p>
