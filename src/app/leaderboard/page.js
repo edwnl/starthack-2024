@@ -39,7 +39,7 @@ const Leaderboard = () => {
   });
 
   const AwardCard = ({ award, icon }) => (
-    <Card className="mb-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white">
+    <Card className="mb-4">
       <div className="flex items-center">
         {icon}
         <div className="ml-4">
