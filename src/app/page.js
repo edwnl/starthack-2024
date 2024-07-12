@@ -37,7 +37,6 @@ export default function Home() {
   const currentEvent = {
     sponsor: "Starbucks",
     location: "Any Starbucks location",
-    boost: "1.5x",
     duration: "This week only",
   };
 
@@ -69,19 +68,15 @@ export default function Home() {
           className="w-full mb-6 bg-gradient-to-r from-green-400 to-blue-500 text-white"
           bordered={false}
         >
-          <div className="flex items-center">
+          <div className="flex items-center text-center">
             <CoffeeOutlined style={{ fontSize: "32px", marginRight: "16px" }} />
             <div>
               <Title level={4} style={{ color: "white", margin: 0 }}>
-                Special Event: {currentEvent.boost} Study Time Boost!
+                Special Event: Starbucks Study!
               </Title>
               <Text style={{ color: "white" }}>
-                Study at {currentEvent.location} for a {currentEvent.boost}{" "}
-                boost on your time.
-              </Text>
-              <br />
-              <Text style={{ color: "white" }}>
-                Sponsored by {currentEvent.sponsor}. {currentEvent.duration}
+                Study at {currentEvent.location} for a special reward! Sponsored
+                by {currentEvent.sponsor}. {currentEvent.duration}!
               </Text>
             </div>
           </div>

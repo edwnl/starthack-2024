@@ -33,8 +33,8 @@ const Leaderboard = () => {
     },
     topPerformerAward: {
       title: "Top Performer",
-      prize: "iPad Pro",
-      sponsor: "Apple",
+      prize: "5x $20 GYG Vouchers",
+      sponsor: "Guzman y Gomez",
     },
   });
 
@@ -142,7 +142,7 @@ const Leaderboard = () => {
 
       {/* Awards Section */}
       <div className="mb-8">
-        <h2 className="text-2xl font-bold mb-4">This Week's Awards</h2>
+        <h2 className="text-2xl font-bold mb-4">This Month's Awards</h2>
         <Row gutter={16}>
           <Col xs={24} sm={12}>
             <AwardCard
