@@ -13,6 +13,7 @@ import {
   MenuOutlined,
   NumberOutlined,
   ClockCircleOutlined,
+  GlobalOutlined,
 } from "@ant-design/icons";
 import { useAuth } from "@/contexts/AuthContext";
 import SignIn from "./GoogleSignIn";
@@ -30,6 +31,13 @@ export default function AppHeader() {
   const { hasActiveSession } = useActiveSession();
 
   const menuItems = [
+    {
+      key: "social",
+      icon: <GlobalOutlined />,
+      label: "Social",
+      href: "/social",
+      bold: false,
+    },
     {
       key: "friends",
       icon: <TeamOutlined />,
