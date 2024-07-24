@@ -2,7 +2,16 @@
 "use client";
 
 import React from "react";
-import { Layout, Typography, List, Avatar, Space, Card, Progress } from "antd";
+import {
+  Layout,
+  Typography,
+  List,
+  Avatar,
+  Space,
+  Card,
+  Progress,
+  Tag,
+} from "antd";
 import {
   UserOutlined,
   MessageOutlined,
@@ -48,6 +57,18 @@ const posts = [
   },
   {
     id: 3,
+    author: "AceTutors",
+    avatar: "https://example.com/acetutor-logo.png",
+    content:
+      "Struggling with your studies? AceTutors offers personalized online tutoring in Math, Science, and Languages. Book your first session today and get 20% off! Use code GROUPZY20 at checkout. #AceTutors #OnlineLearning",
+    timestamp: "Sponsored",
+    likes: 45,
+    comments: 12,
+    shares: 8,
+    isSponsored: true,
+  },
+  {
+    id: 4,
     author: "Charlie",
     avatar: "https://xsgames.co/randomusers/avatar.php?g=male",
     content:
@@ -58,7 +79,7 @@ const posts = [
     shares: 0,
   },
   {
-    id: 4,
+    id: 5,
     author: "Diana",
     avatar: "https://xsgames.co/randomusers/avatar.php?g=female",
     content:
@@ -69,7 +90,7 @@ const posts = [
     shares: 5,
   },
   {
-    id: 5,
+    id: 6,
     author: "Ethan",
     avatar: "https://xsgames.co/randomusers/avatar.php?g=male",
     content:
@@ -169,7 +190,16 @@ const SocialFeed = () => {
             >
               <List.Item.Meta
                 avatar={<Avatar src={item.avatar} icon={<UserOutlined />} />}
-                title={<Text strong>{item.author}</Text>}
+                title={
+                  <div className="flex items-center">
+                    <Text strong>{item.author}</Text>
+                    {item.isSponsored && (
+                      <Tag color="default" className="ml-2">
+                        Sponsored
+                      </Tag>
+                    )}
+                  </div>
+                }
                 description={item.timestamp}
               />
               {item.content}
@@ -188,5 +218,4 @@ const SocialFeed = () => {
     </Layout>
   );
 };
-
 export default SocialFeed;
